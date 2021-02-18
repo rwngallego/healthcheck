@@ -5,6 +5,7 @@ plugins {
   java
   application
   id("com.github.johnrengelman.shadow") version "6.1.0"
+  id("io.spring.dependency-management") version "1.0.1.RELEASE"
 }
 
 group = "org.rowinson"
@@ -34,6 +35,16 @@ dependencies {
   implementation("io.vertx:vertx-web-api-contract")
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
+  implementation("org.apache.logging.log4j:log4j-api")
+  implementation("org.apache.logging.log4j:log4j-core")
+  implementation("org.apache.logging.log4j:log4j-slf4j-impl")
+  implementation("org.slf4j:slf4j-api:1.7.30")
+}
+
+dependencyManagement {
+  imports {
+    mavenBom("org.apache.logging.log4j:log4j-bom:2.14.0")
+  }
 }
 
 java {

@@ -1,0 +1,38 @@
+name: Tests and Build
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+
+      - name: Run the tests
+        run: ./gradlew test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+
+      - name: Build
+        run: ./gradlew assemble
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Package
+          path: build/libs
