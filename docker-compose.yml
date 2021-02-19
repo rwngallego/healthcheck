@@ -1,0 +1,49 @@
+version: '3.1'
+
+services:
+  healthcheck:
+    build:
+      context: .
+    ports:
+      - 8888:8888
+    networks:
+      - healthcheck-net
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    networks:
+      - healthcheck-net
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./config/prometheus:/etc/prometheus
+    logging:
+      driver: none
+    networks:
+      - healthcheck-net
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    logging:
+      driver: none
+    networks:
+      - healthcheck-net
+
+networks:
+  healthcheck-net:
+    name: healthcheck-net
