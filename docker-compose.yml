@@ -9,6 +9,21 @@ services:
     networks:
       - healthcheck-net
 
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    networks:
+      - healthcheck-net
+
 networks:
   healthcheck-net:
     name: healthcheck-net

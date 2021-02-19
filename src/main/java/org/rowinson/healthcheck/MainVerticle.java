@@ -26,7 +26,7 @@ public class MainVerticle extends AbstractVerticle {
 
     Router router = Router.router(vertx);
     router.get("/api/v1/services").handler(context -> {
-      context.response().end(services.toBuffer());
+      context.response().putHeader("Content-Type", "application/json").end(services.toBuffer());
     });
     router.get().handler(StaticHandler.create());
 

@@ -8,7 +8,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-  - url: http://localhost:8080/v1
+  - url: http://localhost:8888/api/v1
 tags:
   - name: service
     description: Services management
@@ -30,9 +30,20 @@ paths:
     get:
       tags:
         - service
-      summary: Get all services
-      description: Get the list of services
+      summary: Get all the services
+      description: Get a list of services and their status information
       operationId: servicesByUser
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: Number of items to skip
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Number of items to return
       responses:
         200:
           description: successful operation
@@ -41,7 +52,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Service'
+                  $ref: '#/components/schemas/ServiceStatus'
         400:
           description: Invalid ID
           content: {}
@@ -120,10 +131,7 @@ paths:
       responses:
         200:
           description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Service'
+          content: {}
         400:
           description: Invalid ID
           content: {}
@@ -173,7 +181,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
+                $ref: '#/components/schemas/LoginResult'
         400:
           description: Validation error
           content: {}
@@ -182,42 +190,69 @@ components:
     Service:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
         name:
           type: string
+          description: Name of the service
         url:
           type: string
-        created_at:
-          type: string
-        updated_at:
-          type: string
-    User:
+          description: Url of the service
+    ServiceStatus:
       type: object
       properties:
         id:
           type: integer
           format: int64
+          description: Id of the service
+        name:
+          type: string
+          description: Name of the service
+        url:
+          type: string
+          description: Url of the service
+        status:
+          type: string
+          description: Current status of the service
+          enum:
+            - FAIL
+            - OK
+          example: FAIL
+        created_at:
+          type: string
+          description: Date in which the service was created
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+          description: The last time the service information was changed
+    User:
+      type: object
+      properties:
         username:
           type: string
+          description: Username
+        password:
+          type: string
+          format: password
+          description: Password
     Login:
       type: object
       properties:
         username:
           type: string
+          description: Username
         password:
           type: string
-    LoginResponse:
+          format: password
+          description: Password
+    LoginResult:
       type: object
       properties:
-        code:
-          type: integer
-          format: int32
         message:
           type: string
+          description: Informative message
         token:
           type: string
+          description: Authentication token
   securitySchemes:
     bearer:
       type: http

@@ -1,0 +1,4 @@
+package org.rowinson.healthcheck.adapters.handlers.user;
+
+public class CreateUserHandler {
+}

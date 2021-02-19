@@ -1,4 +1,4 @@
-# HealthCheck - Design v1
+# HealthCheck - Design v2
 
 This app polls periodically the status of the services
 that belong to a user. This document outlines the different
@@ -12,17 +12,22 @@ The following assumptions were made as part of the design:
   handle high traffic.
 - It's important to keep an audit log of the status of the services being
   monitored, and the actions performed over the system.
-- The login/registration page will be simplified.
+- Some parts of the app will be simplified to cover the basic use cases but
+  can easily be extended.
 
 ## Architecture
 
 The application was designed with an Event Driven
-architecture and is for demonstration purposes only. The events are considered
-first class citizens. To improve availability, it will follow the CQRS principle (separate and specialized Writer
-and Reader), and will rely on the eventual consistency in the synchronization.
+architecture in mind, and is for demonstration purposes only. The events are considered
+first class citizens, and to improve availability it will follow the CQRS principle (separate and specialized Writer
+and Reader). It will rely on eventual consistency in the synchronization.
 The events are stored in an Event Store (Writer), and the
 projections will be stored as a separate model optimized for reading
 (Reader).
+
+For demonstration only, the projection will be recreated
+each time the app is restarted, but there are techniques to avoid the
+processing overhead (e.g. Using snapshots).
 
 ![img/design.jpg](img/design.jpg)
 
@@ -55,33 +60,43 @@ Considerations:
   - ServiceProjection: Projection for the service
   - UserProjection: Projection for the user
 
+## Events
+
+- ServiceCreated
+- ServiceDeleted
+- ServiceStatusFailed
+- ServiceStatusSucceeded
+- ServiceUpdated
+- ServiceCreated
+
 ## Project tasks
 
 - Setup backend/frontend projects
-  - CI/CD
-  - Logging
-  - Unit Tests
-  - Containers (Dockerfile/docker-compose.yml)
-  - Code structure
+  - [x] CI/CD
+  - [x] Logging
+  - [x] Unit Tests
+  - [x] Containers (Dockerfile/docker-compose.yml)
+  - [x] Code structure
 - Backend:
-  - Define the API using OpenAPI. Url: [http://localhost:8888/openapi](http://localhost:8888/swagger)
-  - Implement the Writer / Event Store
-  - Implement the Reader / Read model
-  - Implement the Aggregates:
-    - ServiceAggregate
-    - UserAggregate
-  - Implement the Worker
-  - Implement the receivers:
-    - ServiceProjection
-    - UserProjection
-- Frontend:
-  - Create the Registration/Login page
-  - Create the Dashboard page with the list of services and their status
-  - Services CRUD:
-    - Add
-    - Edit
-    - List/Delete
-  - Extra: Push service status updates using web sockets
+  - [x] Define the API using OpenAPI. Url: [http://localhost:8888/openapi](http://localhost:8888/swagger)
+  - [ ] Implement the Writer / Event Store
+  - [ ] Implement the Reader / Read model
+  - [ ] Implement the HTTP Handlers
+  - [ ] Implement the Aggregates:
+    - [ ] ServiceAggregate
+    - [ ] UserAggregate
+  - [ ] Implement the Worker
+  - [ ] Implement the receivers:
+    - [ ] ServiceProjection
+    - [ ] UserProjection
+- [ ] Frontend:
+  - [ ] Create the Registration/Login page
+  - [ ] Create the Dashboard page with the list of services and their status
+  - [ ] Services CRUD:
+    - [ ] Add
+    - [ ] Edit
+    - [ ] List/Delete
+  - [ ] Extra: Push service status updates using web sockets
 
 ## Code structure
 
@@ -136,7 +151,7 @@ The following methods require the auth token (JWT)
 
 Method | Endpoint | Description
 --- | --- | ---
-GET | /api/v1/services | Get the list of services for the user
+GET | /api/v1/services | Get the list of services for the user and their status `"OK"` or `"FAIL"`
 POST | /api/v1/services | Create a new service
 DELETE | /api/v1/service/:id | Delete service
 PUT | /api/v1/service/:id | Update service
