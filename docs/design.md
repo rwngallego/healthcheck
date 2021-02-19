@@ -4,7 +4,7 @@ This app polls periodically the status of the services
 that belong to a user. This document outlines the different
 considerations, and the architecture design for its initial version.
 
-## Asumptions
+## Assumptions
 
 The following assumptions were made as part of the design:
 
@@ -64,7 +64,7 @@ Considerations:
   - Containers (Dockerfile/docker-compose.yml)
   - Code structure
 - Backend:
-  - Define the API using OpenAPI
+  - Define the API using OpenAPI. Url: [http://localhost:8888/openapi](http://localhost:8888/swagger)
   - Implement the Writer / Event Store
   - Implement the Reader / Read model
   - Implement the Aggregates:
@@ -128,12 +128,16 @@ For the frontend, an SPA will be used with:
 
 ## API Endpoints
 
+You can find the OpenAPI spec at [http://localhost:8888/swagger-v1/](http://localhost:8888/swagger-v1/)
+
 ### Services
+
+The following methods require the auth token (JWT)
 
 Method | Endpoint | Description
 --- | --- | ---
-GET | /api/v1/services/ | Get the list of services
-POST | /api/v1/services/ | Create a new service
+GET | /api/v1/services | Get the list of services for the user
+POST | /api/v1/services | Create a new service
 DELETE | /api/v1/service/:id | Delete service
 PUT | /api/v1/service/:id | Update service
 
@@ -141,13 +145,13 @@ PUT | /api/v1/service/:id | Update service
 
 Method | Endpoint | Description
 --- | --- | ---
-POST | /api/v1/users/ | Create a new user
+POST | /api/v1/users | Create a new user
 
 ### Authentication
 
 Method | Endpoint | Description
 --- | --- | ---
-POST | /api/v1/login/ | Authenticate the user
+POST | /api/v1/login | Authenticate the user and get the access token
 
 ## Further considerations
 

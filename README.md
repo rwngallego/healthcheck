@@ -1,4 +1,4 @@
-# Healthcheck
+# HealthCheck
 
 Monitor the status of service endpoints by running periodic pollers.
 It uses [Vert.x](https://vertx.io/), a reactive Java toolkit in the
@@ -8,6 +8,7 @@ backend and React in the frontend.
 
 For further information:
 - [Design and Architecture](docs/design.md)
+- The Open API Spec is hosted at: [http://localhost:8888/swagger-v1/](http://localhost:8888/swagger-v1/)
 
 ## Setup
 

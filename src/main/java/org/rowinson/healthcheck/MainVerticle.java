@@ -30,6 +30,8 @@ public class MainVerticle extends AbstractVerticle {
     });
     router.get().handler(StaticHandler.create());
 
+    router.route("/*").handler(StaticHandler.create());
+
     vertx.createHttpServer().
       requestHandler(router).
       listen(8888).
