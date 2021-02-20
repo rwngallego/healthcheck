@@ -1,9 +1,9 @@
 {
   "port": 8888,
-  "mysql-port": 3306,
-  "mysql-host": "mysql",
-  "mysql-database": "healthcheck",
-  "mysql-user": "healthcheck",
-  "mysql-password": "healthcheck",
-  "mysql-pool-size": 5
+  "db-port": 3306,
+  "db-host": "mysql",
+  "db-database": "healthcheck",
+  "db-user": "healthcheck",
+  "db-password": "healthcheck",
+  "db-pool-size": 5
 }

@@ -14,6 +14,10 @@ import org.rowinson.healthcheck.adapters.verticles.MainVerticle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This is the entry point to the application. In this custom launcher
+ * the metrics and the generic exception handler are configured
+ */
 public class CustomLauncher extends Launcher {
 
   private static final Logger LOG = LoggerFactory.getLogger(MainVerticle.class);
@@ -26,7 +30,7 @@ public class CustomLauncher extends Launcher {
   public void beforeStartingVertx(VertxOptions options) {
     LOG.info("Starting Vertx");
 
-    // Set the Prometheus options
+    // Enable Prometheus metrics
     options.setMetricsOptions(new MicrometerMetricsOptions()
       .setPrometheusOptions(new VertxPrometheusOptions().setEnabled(true))
       .setEnabled(true));
@@ -35,6 +39,7 @@ public class CustomLauncher extends Launcher {
   @Override
   public void afterStartingVertx(Vertx vertx) {
     LOG.info("Configuring vertx");
+
     // Configure the Prometheus registry
     PrometheusMeterRegistry registry = (PrometheusMeterRegistry) BackendRegistries.getDefaultNow();
     registry.config().meterFilter(
@@ -48,7 +53,7 @@ public class CustomLauncher extends Launcher {
         }
       });
 
-    // Register exception handler
+    // Register the generic exception handler
     vertx.exceptionHandler(error -> {
       LOG.error("Unhandled exception: {}", error);
     });

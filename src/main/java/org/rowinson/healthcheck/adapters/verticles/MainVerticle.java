@@ -7,9 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main verticle in charge of deploying the other application
- * verticles:
- * - RestApiVerticle
+ * Main verticle in charge of deploying the other application verticles:
+ * - ApiServerVerticle
  * - PollerWorkerVerticle
  * - PushServiceVerticle
  */
@@ -21,14 +20,14 @@ public class MainVerticle extends AbstractVerticle {
   public void start(Promise<Void> startPromise) throws Exception {
     LOG.info("Main Verticle started");
 
-    vertx.deployVerticle(RestApiVerticle.class.getName(),
+    vertx.deployVerticle(ApiServerVerticle.class.getName(),
       new DeploymentOptions().setInstances(Runtime.getRuntime().availableProcessors()))
       .onFailure(error -> {
-        LOG.error("Failed to deploy {} verticle {}", RestApiVerticle.class.getName(), error);
+        LOG.error("Failed to deploy {} verticle {}", ApiServerVerticle.class.getName(), error);
         startPromise.fail(error);
       })
       .onSuccess(id -> {
-        LOG.info("{} deployed, id: {}", RestApiVerticle.class.getName(), id);
+        LOG.info("{} deployed, id: {}", ApiServerVerticle.class.getName(), id);
         startPromise.complete();
       });
   }

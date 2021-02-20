@@ -3,12 +3,19 @@ package org.rowinson.healthcheck.adapters.handlers.service;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.RoutingContext;
+import org.rowinson.healthcheck.application.ServiceApplication;
 import org.rowinson.healthcheck.domain.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GetServicesHandler implements Handler<RoutingContext> {
   public static final Logger LOG = LoggerFactory.getLogger(GetServicesHandler.class);
+
+  private ServiceApplication serviceApplication;
+
+  public GetServicesHandler(ServiceApplication serviceApplication) {
+    serviceApplication = serviceApplication;
+  }
 
   @Override
   public void handle(RoutingContext context) {
