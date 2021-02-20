@@ -10,14 +10,22 @@ import io.vertx.core.VertxOptions;
 import io.vertx.micrometer.MicrometerMetricsOptions;
 import io.vertx.micrometer.VertxPrometheusOptions;
 import io.vertx.micrometer.backends.BackendRegistries;
+import org.rowinson.healthcheck.adapters.verticles.MainVerticle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CustomLauncher extends Launcher {
+
+  private static final Logger LOG = LoggerFactory.getLogger(MainVerticle.class);
+
   public static void main(String[] args) {
     new CustomLauncher().dispatch(args);
   }
 
   @Override
   public void beforeStartingVertx(VertxOptions options) {
+    LOG.info("Starting Vertx");
+
     // Set the Prometheus options
     options.setMetricsOptions(new MicrometerMetricsOptions()
       .setPrometheusOptions(new VertxPrometheusOptions().setEnabled(true))
@@ -26,6 +34,7 @@ public class CustomLauncher extends Launcher {
 
   @Override
   public void afterStartingVertx(Vertx vertx) {
+    LOG.info("Configuring vertx");
     // Configure the Prometheus registry
     PrometheusMeterRegistry registry = (PrometheusMeterRegistry) BackendRegistries.getDefaultNow();
     registry.config().meterFilter(
@@ -38,5 +47,10 @@ public class CustomLauncher extends Launcher {
             .merge(config);
         }
       });
+
+    // Register exception handler
+    vertx.exceptionHandler(error -> {
+      LOG.error("Unhandled exception: {}", error);
+    });
   }
 }

@@ -17,8 +17,10 @@ repositories {
 
 val vertxVersion = "4.0.2"
 val junitJupiterVersion = "5.7.0"
+val jacksonVersion = "2.11.3"
+val mySqlClient = "4.0.2"
 
-val mainVerticleName = "org.rowinson.healthcheck.MainVerticle"
+val mainVerticleName = "org.rowinson.healthcheck.adapters.verticles.MainVerticle"
 val launcherClassName = "org.rowinson.healthcheck.CustomLauncher"
 
 val watchForChange = "src/**/*"
@@ -34,7 +36,10 @@ dependencies {
   implementation("io.vertx:vertx-web")
   implementation("io.vertx:vertx-web-api-contract")
   implementation("io.vertx:vertx-micrometer-metrics:4.0.2")
+  implementation("io.vertx:vertx-config:4.0.2")
+  implementation("io.vertx:vertx-mysql-client:$mySqlClient")
   implementation("io.micrometer:micrometer-registry-prometheus:latest.release")
+  implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
   implementation("org.apache.logging.log4j:log4j-api")
   implementation("org.apache.logging.log4j:log4j-core")
   implementation("org.apache.logging.log4j:log4j-slf4j-impl")

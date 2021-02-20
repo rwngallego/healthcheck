@@ -12,11 +12,11 @@ public class Service implements Serializable {
 
   public Service() { }
 
-  public Service(String name, String url, Date createdAt, Date updatedAt) {
+  public Service(String name, String url) {
     this.name = name;
     this.url = url;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
+    this.createdAt = new Date();
+    this.updatedAt = this.createdAt;
   }
 
   public void setName(String name) {

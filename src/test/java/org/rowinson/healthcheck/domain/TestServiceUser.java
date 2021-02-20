@@ -21,7 +21,7 @@ public class TestServiceUser {
   void testNew () {
     Date createdAt = new Date();
     Date updatedAt = new Date();
-    Service service = new Service("test-service", "127.0.0.1", createdAt, updatedAt);
+    Service service = new Service("test-service", "127.0.0.1");
 
     assertEquals("test-service", service.getName());
     assertEquals("127.0.0.1", service.getUrl());
@@ -33,7 +33,7 @@ public class TestServiceUser {
   void testGetSet () {
     Date newCreatedAt = new Date();
     Date newUpdatedAt = new Date();
-    Service service = new Service("test-service", "127.0.0.1", new Date(), new Date());
+    Service service = new Service("test-service", "127.0.0.1");
     service.setName("new-test-service");
     service.setUrl("192.168.0.1");
     service.setCreatedAt(newCreatedAt);

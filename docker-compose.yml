@@ -17,9 +17,9 @@ services:
       - 3306:3306
     restart: always
     environment:
-      MYSQL_DATABASE: exampledb
-      MYSQL_USER: exampleuser
-      MYSQL_PASSWORD: examplepass
+      MYSQL_DATABASE: healthcheck
+      MYSQL_USER: healthcheck
+      MYSQL_PASSWORD: healthcheck
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     networks:
       - healthcheck-net
