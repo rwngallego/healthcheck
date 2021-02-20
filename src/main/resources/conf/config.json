@@ -1,7 +1,7 @@
 {
   "port": 8888,
   "db-port": 3306,
-  "db-host": "mysql",
+  "db-host": "localhost",
   "db-database": "healthcheck",
   "db-user": "healthcheck",
   "db-password": "healthcheck",

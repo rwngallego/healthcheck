@@ -101,7 +101,7 @@ public class ApiServerVerticle extends AbstractVerticle {
   private MySQLPool getDbPool(Vertx vertx, JsonObject options) {
     MySQLConnectOptions connectionOptions = new MySQLConnectOptions()
       .setPort(options.getInteger("db-port"))
-      .setHost(options.getString("db-port"))
+      .setHost(options.getString("db-host"))
       .setDatabase(options.getString("db-database"))
       .setUser(options.getString("db-user"))
       .setPassword(options.getString("db-password"));

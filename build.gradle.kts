@@ -6,6 +6,7 @@ plugins {
   application
   id("com.github.johnrengelman.shadow") version "6.1.0"
   id("io.spring.dependency-management") version "1.0.1.RELEASE"
+  id("io.freefair.lombok") version "5.3.0"
 }
 
 group = "org.rowinson"
@@ -35,15 +36,18 @@ dependencies {
   implementation("io.vertx:vertx-web-validation")
   implementation("io.vertx:vertx-web")
   implementation("io.vertx:vertx-web-api-contract")
-  implementation("io.vertx:vertx-micrometer-metrics:4.0.2")
-  implementation("io.vertx:vertx-config:4.0.2")
-  implementation("io.vertx:vertx-mysql-client:$mySqlClient")
+  implementation("io.vertx:vertx-micrometer-metrics:$vertxVersion")
+  implementation("io.vertx:vertx-config:$vertxVersion")
+  implementation("io.vertx:vertx-mysql-client:$vertxVersion")
+  implementation("io.vertx:vertx-sql-client-templates:$vertxVersion")
+  implementation("mysql:mysql-connector-java:8.0.15")
   implementation("io.micrometer:micrometer-registry-prometheus:latest.release")
   implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
   implementation("org.apache.logging.log4j:log4j-api")
   implementation("org.apache.logging.log4j:log4j-core")
   implementation("org.apache.logging.log4j:log4j-slf4j-impl")
   implementation("org.slf4j:slf4j-api:1.7.30")
+  implementation("org.flywaydb:flyway-core:7.5.3")
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
 }
