@@ -1,5 +1,7 @@
 package org.rowinson.healthcheck;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
@@ -13,6 +15,8 @@ import io.vertx.micrometer.backends.BackendRegistries;
 import org.rowinson.healthcheck.adapters.verticles.MainVerticle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.SimpleDateFormat;
 
 /**
  * This is the entry point to the application. In this custom launcher
@@ -57,5 +61,11 @@ public class CustomLauncher extends Launcher {
     vertx.exceptionHandler(error -> {
       LOG.error("Unhandled exception: {}", error);
     });
+
+    // Add the Jackson Date formatter
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+    ObjectMapper mapper = io.vertx.core.json.jackson.DatabindCodec.mapper();
+    mapper.registerModule(new JavaTimeModule());
+    mapper.setDateFormat(df);
   }
 }

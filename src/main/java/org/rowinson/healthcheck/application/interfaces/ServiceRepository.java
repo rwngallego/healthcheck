@@ -1,14 +1,17 @@
 package org.rowinson.healthcheck.application.interfaces;
 
 import io.vertx.core.Future;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
 import org.rowinson.healthcheck.domain.Service;
 
+import java.util.ArrayList;
+
+/**
+ * Interface for the DB access related to services
+ */
 public interface ServiceRepository {
-  public Future<RowSet<Row>> GetAllServices(int offset, int size, String orderBy, String orderAsc);
-  public Service GetService(int serviceId);
-  public void CreateService(Service service);
-  public void UpdateService(Service service);
-  public void DeleteService(int serviceId);
+  public Future<ArrayList<Service>> GetAllServices(Long userId, int offset, int size, String orderBy, String orderAsc);
+  public Future<Service> GetService(Long userId, Long serviceId);
+  public Future<Long> CreateService(Service service);
+  public Future<Void> UpdateService(Service service);
+  public Future<Void> DeleteService(Long serviceId);
 }

@@ -1,9 +1,9 @@
 {
-  "port": 8888,
-  "db-port": 3306,
-  "db-host": "localhost",
-  "db-database": "healthcheck",
-  "db-user": "healthcheck",
-  "db-password": "healthcheck",
-  "db-pool-size": 5
+  "WEB_PORT": 8888,
+  "DB_PORT": 3306,
+  "DB_HOST": "127.0.0.1",
+  "DB_DATABASE": "healthcheck",
+  "DB_USER": "healthcheck",
+  "DB_PASSWORD": "healthcheck",
+  "DB_POOL_SIZE": 5
 }

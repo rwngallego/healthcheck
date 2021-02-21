@@ -43,6 +43,7 @@ dependencies {
   implementation("mysql:mysql-connector-java:8.0.15")
   implementation("io.micrometer:micrometer-registry-prometheus:latest.release")
   implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
   implementation("org.apache.logging.log4j:log4j-api")
   implementation("org.apache.logging.log4j:log4j-core")
   implementation("org.apache.logging.log4j:log4j-slf4j-impl")

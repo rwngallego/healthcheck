@@ -19,7 +19,10 @@ public class GetServicesHandler implements Handler<RoutingContext> {
 
   @Override
   public void handle(RoutingContext context) {
-    Service account = new Service("Account", "127.0.0.1:2001");
+    Service account = new Service();
+    account.setName("Account");
+    account.setUrl("127.0.0.1:2001");
+
     JsonArray services = new JsonArray();
     services.add(account);
 

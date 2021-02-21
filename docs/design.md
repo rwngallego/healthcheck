@@ -131,7 +131,7 @@ There will be adapters/application/domain/framework layers.
   - [x] Code structure
 - Backend:
   - [x] Define the API using OpenAPI. Url: [http://localhost:8888/openapi](http://localhost:8888/swagger)
-  - [ ] Implement the Repositories
+  - [x] Implement the Repositories
   - [ ] Implement the Handlers
   - [ ] Implement the Application
   - [ ] Implement the Worker pool
