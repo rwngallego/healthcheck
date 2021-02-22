@@ -119,8 +119,7 @@ public class TestMySQLServiceRepository extends AbstractHealthCheckTest {
 
   private Future<Long> createUser() {
     User user = new User();
-    user.setUsername("test-user");
-    user.setPassword("pass");
+    user.setName("test-user");
     return userRepo.CreateUser(user);
   }
 

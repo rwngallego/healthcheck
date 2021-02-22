@@ -13,8 +13,8 @@ public class Service {
   private long userId;
   private String name;
   private String url;
+  private String status;
   @JsonProperty("created_at")
-
   private LocalDateTime createdAt;
   @JsonProperty("updated_at")
   private LocalDateTime updatedAt;

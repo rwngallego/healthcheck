@@ -1,5 +1,7 @@
 # HealthCheck
 
+[![Tests and Build](https://github.com/rwngallego/healthcheck/actions/workflows/tests.yml/badge.svg)](https://github.com/rwngallego/healthcheck/actions/workflows/tests.yml)
+
 Monitor the status of service endpoints by running periodic pollers.
 It uses [Vert.x](https://vertx.io/), a reactive Java toolkit in the
 backend and React in the frontend.

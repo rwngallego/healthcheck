@@ -9,9 +9,13 @@ import java.util.ArrayList;
  * Interface for the DB access related to services
  */
 public interface ServiceRepository {
-  public Future<ArrayList<Service>> GetAllServices(Long userId, int offset, int size, String orderBy, String orderAsc);
-  public Future<Service> GetService(Long userId, Long serviceId);
-  public Future<Long> CreateService(Service service);
-  public Future<Void> UpdateService(Service service);
-  public Future<Void> DeleteService(Long serviceId);
+  Future<ArrayList<Service>> GetAllServices(Long userId, int offset, int size, String orderBy, String orderAsc);
+
+  Future<Service> GetService(Long userId, Long serviceId);
+
+  Future<Long> CreateService(Service service);
+
+  Future<Void> UpdateService(Service service);
+
+  Future<Void> DeleteService(Long serviceId);
 }

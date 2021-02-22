@@ -12,6 +12,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.rowinson.healthcheck.adapters.repositories.MySQLServiceRepository;
 import org.rowinson.healthcheck.adapters.repositories.MySQLUserRepository;
+import org.rowinson.healthcheck.framework.Config;
+import org.rowinson.healthcheck.framework.Database;
 
 import java.text.SimpleDateFormat;
 
@@ -30,12 +32,8 @@ public abstract class AbstractHealthCheckTest {
     mapper.registerModule(new JavaTimeModule());
     mapper.setDateFormat(df);
 
-     Config.GetValues(vertx)
+    Config.GetValues(vertx, Config.CONF_CONFIG_TEST_JSON)
       .compose(config -> {
-        // Setup a different DB for testing
-        String dbTest = config.getString(Config.DB_DATABASE) + "_test";
-        config.put(Config.DB_DATABASE, dbTest);
-
         MySQLPool pool = Database.GetPool(vertx, config);
 
         this.pool = pool;

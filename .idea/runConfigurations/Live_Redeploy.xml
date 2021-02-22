@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="org.rowinson.healthcheck.CustomLauncher" />
     <module name="healthcheck.main" />
-    <option name="PROGRAM_PARAMETERS" value="run org.rowinson.healthcheck.adapters.verticles.MainVerticle --redeploy=**/*.class --vertxweb.environment=dev" />
+    <option name="PROGRAM_PARAMETERS" value="run org.rowinson.healthcheck.framework.verticles.MainVerticle --redeploy=**/*.class --vertxweb.environment=dev" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

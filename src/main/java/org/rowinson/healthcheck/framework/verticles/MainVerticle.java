@@ -1,4 +1,4 @@
-package org.rowinson.healthcheck.adapters.verticles;
+package org.rowinson.healthcheck.framework.verticles;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;

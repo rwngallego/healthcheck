@@ -9,12 +9,10 @@ public class TestUser extends AbstractHealthCheckTest {
   void testUserToJson () {
     User user = new User();
     user.setId(7);
-    user.setUsername("test-username");
-    user.setPassword("test-password");
+    user.setName("test-name");
 
     var json = user.toJson();
     Assertions.assertEquals(7, json.getLong("id"));
-    Assertions.assertEquals("test-username", json.getString("username"));
-    Assertions.assertEquals("test-password", json.getString("password"));
+    Assertions.assertEquals("test-name", json.getString("name"));
   }
 }

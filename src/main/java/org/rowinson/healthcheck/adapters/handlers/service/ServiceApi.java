@@ -1,12 +1,11 @@
-package org.rowinson.healthcheck.adapters.handlers;
+package org.rowinson.healthcheck.adapters.handlers.service;
 
 import io.vertx.ext.web.Router;
 import io.vertx.mysqlclient.MySQLPool;
-import org.rowinson.healthcheck.adapters.handlers.service.GetServicesHandler;
 import org.rowinson.healthcheck.adapters.repositories.MySQLServiceRepository;
-import org.rowinson.healthcheck.adapters.verticles.ApiServerVerticle;
 import org.rowinson.healthcheck.application.ServiceApplication;
 import org.rowinson.healthcheck.application.interfaces.ServiceRepository;
+import org.rowinson.healthcheck.framework.verticles.ApiServerVerticle;
 
 /**
  * Registers all the HTTP handlers related to the services endpoints

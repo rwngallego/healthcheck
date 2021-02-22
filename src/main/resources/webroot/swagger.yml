@@ -16,24 +16,26 @@ tags:
       description: More information
       url: https://github.com/rwngallego/healthcheck/blob/master/docs/design.md
   - name: user
-    description: User management
-    externalDocs:
-      description: More information
-      url: https://github.com/rwngallego/healthcheck/blob/master/docs/design.md
-  - name: auth
-    description: Authentication management
+    description: User management (DEMO only)
     externalDocs:
       description: More information
       url: https://github.com/rwngallego/healthcheck/blob/master/docs/design.md
 paths:
-  /services:
+  /users/{userId}/services:
     get:
       tags:
         - service
       summary: Get all the services
-      description: Get a list of services and their status information
-      operationId: servicesByUser
+      description: Get a list of services and their status information, for the given user
+      operationId: GetServices
       parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
         - in: query
           name: offset
           schema:
@@ -44,6 +46,17 @@ paths:
           schema:
             type: integer
           description: Number of items to return
+        - in: query
+          name: order_by
+          schema:
+            type: string
+          description: Field to order by
+        - in: query
+          name: order_asc
+          schema:
+            type: string
+            example: asc
+          description: Ascending or descending order
       responses:
         200:
           description: successful operation
@@ -59,14 +72,20 @@ paths:
         404:
           description: Not found
           content: {}
-      security:
-        - bearer: []
     post:
       tags:
         - service
-      summary: Create a new service
+      summary: Create a new service for the user
       description: Create a new service
-      operationId: createService
+      operationId: CreateService
+      parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         description: The service information
         content:
@@ -81,16 +100,21 @@ paths:
         400:
           description: Validation error
           content: {}
-      security:
-        - bearer: []
-  /services/{serviceId}:
+  /users/{userId}/services/{serviceId}:
     put:
       tags:
         - service
       summary: Update service
-      description: Update the service information
-      operationId: updateService
+      description: Update the service
+      operationId: UpdateService
       parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
         - name: serviceId
           in: path
           description: Service ID
@@ -112,14 +136,12 @@ paths:
         400:
           description: Validation error
           content: {}
-      security:
-        - bearer: []
     delete:
       tags:
         - service
       summary: Delete service
       description: Delete the service
-      operationId: deleteService
+      operationId: DeleteService
       parameters:
         - name: serviceId
           in: path
@@ -138,15 +160,13 @@ paths:
         404:
           description: Not found
           content: {}
-      security:
-        - bearer: []
   /users:
     post:
       tags:
         - user
-      summary: Create a new user
-      description: Create a new user
-      operationId: createUser
+      summary: Create a new user (DEMO only)
+      description: Create a new user (DEMO only, it doesn't implement validation and filtering)
+      operationId: CreateUser
       requestBody:
         description: The user information
         content:
@@ -161,30 +181,21 @@ paths:
         400:
           description: Validation error
           content: {}
-  /login:
-    post:
+    get:
       tags:
-        - auth
-      summary: Authenticate user
-      description: Authenticate the user. It returns the JWT token.
-      operationId: login
-      requestBody:
-        description: The login information
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Login'
-        required: true
+        - user
+      summary: Get all the users (DEMO only)
+      description: Get a list of users (DEMO only, it doesn't implement pagination).
+      operationId: GetUsers
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResult'
-        400:
-          description: Validation error
-          content: {}
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
 components:
   schemas:
     Service:
@@ -227,34 +238,15 @@ components:
     User:
       type: object
       properties:
-        username:
+        name:
           type: string
-          description: Username
-        password:
-          type: string
-          format: password
-          description: Password
-    Login:
+          description: Name of the user
+    UserInformation:
       type: object
       properties:
-        username:
+        user_id:
           type: string
-          description: Username
-        password:
+          description: User identifier
+        name:
           type: string
-          format: password
-          description: Password
-    LoginResult:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Informative message
-        token:
-          type: string
-          description: Authentication token
-  securitySchemes:
-    bearer:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+          description: Name of the user

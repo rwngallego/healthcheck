@@ -1,4 +1,4 @@
-package org.rowinson.healthcheck.adapters.verticles;
+package org.rowinson.healthcheck.framework.verticles;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -10,10 +10,10 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.micrometer.PrometheusScrapingHandler;
 import io.vertx.mysqlclient.MySQLPool;
-import org.rowinson.healthcheck.Config;
-import org.rowinson.healthcheck.Database;
-import org.rowinson.healthcheck.adapters.handlers.ServiceApi;
-import org.rowinson.healthcheck.adapters.handlers.UserApi;
+import org.rowinson.healthcheck.adapters.handlers.service.ServiceApi;
+import org.rowinson.healthcheck.adapters.handlers.user.UserApi;
+import org.rowinson.healthcheck.framework.Config;
+import org.rowinson.healthcheck.framework.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

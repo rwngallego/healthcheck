@@ -1,8 +1,7 @@
 create table users
 (
     id int not null auto_increment,
-    username varchar(100) not null,
-    password varchar(60) not null,
+    name varchar(100) not null,
     primary key (id)
 );
 
@@ -12,6 +11,7 @@ create table services
     user_id int not null,
     name varchar(100) not null,
     url varchar(250) not null,
+    status int not null default 0,
     created_at datetime default current_timestamp not null,
     updated_at datetime default current_timestamp not null,
     primary key (id),

@@ -17,10 +17,14 @@ services:
       - 3306:3306
     restart: always
     environment:
-      MYSQL_DATABASE: healthcheck
-      MYSQL_USER: healthcheck
-      MYSQL_PASSWORD: healthcheck
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      MYSQL_ROOT_PASSWORD: healthcheck
+      MYSQL_USER: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: '1'
+    entrypoint:
+      sh -c "
+      echo 'CREATE DATABASE IF NOT EXISTS healthcheck; CREATE DATABASE IF NOT EXISTS healthcheck_test;' > /docker-entrypoint-initdb.d/init.sql;
+      /usr/local/bin/docker-entrypoint.sh --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      "
     networks:
       - healthcheck-net
 

@@ -3,8 +3,8 @@ package org.rowinson.healthcheck.adapters.handlers.service;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.RoutingContext;
+import org.rowinson.healthcheck.framework.Http;
 import org.rowinson.healthcheck.application.ServiceApplication;
-import org.rowinson.healthcheck.domain.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,22 +13,28 @@ public class GetServicesHandler implements Handler<RoutingContext> {
 
   private ServiceApplication serviceApplication;
 
-  public GetServicesHandler(ServiceApplication serviceApplication) {
-    serviceApplication = serviceApplication;
+  public GetServicesHandler(ServiceApplication application) {
+    this.serviceApplication = application;
   }
 
   @Override
   public void handle(RoutingContext context) {
-    Service account = new Service();
-    account.setName("Account");
-    account.setUrl("127.0.0.1:2001");
+    long userId = 1;
+    serviceApplication.getBelongingServices(userId, 0, 10, "name", "asc")
+      .onSuccess(services -> {
+        JsonArray result = new JsonArray();
+        services.stream().forEach(a -> result.add(a));
 
-    JsonArray services = new JsonArray();
-    services.add(account);
+        LOG.info("{} | {}", context.normalizedPath(), result.encode());
 
-    LOG.info("{} | {}", context.normalizedPath(), services.encode());
-    context.response()
-      .putHeader("Content-Type", "application/json")
-      .end(services.toBuffer());
+        context.response()
+          .putHeader(Http.CONTENT_TYPE, Http.APPLICATION_JSON)
+          .end(result.toBuffer());
+      })
+    .onFailure(error -> {
+      LOG.error("Could not get the belonging services: ", error);
+
+      context.failure();
+    });
   }
 }

@@ -11,8 +11,7 @@ public class TestMySQLUserRepository extends AbstractHealthCheckTest {
   @Test
   void testCreateUser(VertxTestContext testContext) {
     User user = new User();
-    user.setUsername("test-user");
-    user.setPassword("pass");
+    user.setName("test-user");
     userRepo.CreateUser(user)
       .onSuccess(userId -> {
         Assertions.assertNotNull(userId);
@@ -22,16 +21,19 @@ public class TestMySQLUserRepository extends AbstractHealthCheckTest {
   }
 
   @Test
-  void testGetByUsernamePassword(VertxTestContext testContext) {
+  void testGetUsers(VertxTestContext testContext) {
     User user = new User();
-    user.setUsername("test-user-with-password");
-    user.setPassword("pass-2");
+    user.setName("test-get-users");
     userRepo.CreateUser(user)
-      .compose(next -> userRepo.GetByUsernameAndPassword("test-user-with-password", "pass-2"))
-      .onSuccess(created -> {
-        Assertions.assertNotNull(created);
-        Assertions.assertEquals("test-user-with-password", created.getUsername());
-        Assertions.assertEquals("pass-2", created.getPassword());
+      .compose(userId -> {
+        user.setId(userId);
+        return userRepo.GetAllUsers();
+      })
+      .onSuccess(results -> {
+        Assertions.assertNotNull(results);
+        Assertions.assertEquals(1, results.size());
+        Assertions.assertEquals("test-get-users", results.get(0).getName());
+        Assertions.assertEquals(user.getId(), results.get(0).getId());
         testContext.completeNow();
       })
       .onFailure(e -> testContext.failNow(e));

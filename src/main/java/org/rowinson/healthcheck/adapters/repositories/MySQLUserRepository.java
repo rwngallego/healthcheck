@@ -9,6 +9,8 @@ import org.rowinson.healthcheck.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,29 +27,45 @@ public class MySQLUserRepository implements UserRepository {
     this.pool = pool;
   }
 
+  /**
+   * Get all the users (DEMO Only)
+   *
+   * @return
+   */
   @Override
-  public Future<User> GetByUsernameAndPassword(String username, String password) {
-    Map<String, Object> params = new HashMap<>();
-    params.put("username", username);
-    params.put("password", password);
+  public Future<ArrayList<User>> GetAllUsers() {
+    LOG.info("Getting all the users from DB");
+
     return SqlTemplate.forQuery(pool,
-      "SELECT u.id, u.username, u.password FROM users u WHERE u.username = #{username} AND u.password = #{password}")
+      "SELECT u.id, u.name FROM users u")
       .mapTo(User.class)
-      .execute(params)
+      .execute(Collections.emptyMap())
       .compose(results -> {
-        var result = results.iterator().hasNext() ? results.iterator().next() : null;
-        return Future.succeededFuture(result);
+        var users = new ArrayList<User>();
+        results.forEach(u -> users.add(u));
+
+        LOG.debug("Retrieved: {}", users.toString());
+        return Future.succeededFuture(users);
       });
   }
 
+  /**
+   * Create the user
+   *
+   * @param user
+   * @return
+   */
   public Future<Long> CreateUser(User user) {
+    LOG.info("Creating user in DB, name: {}", user.getName());
+
     Map<String, Object> params = new HashMap<>();
-    params.put("username", user.getUsername());
-    params.put("password", user.getPassword());
-    return SqlTemplate.forQuery(pool, "INSERT INTO users (username, password) VALUES (#{username}, #{password})")
+    params.put("name", user.getName());
+    return SqlTemplate.forQuery(pool, "INSERT INTO users (name) VALUES (#{name})")
       .execute(params)
       .compose(results -> {
         long id = results.property(MySQLClient.LAST_INSERTED_ID);
+
+        LOG.debug("Created user: {}", id);
         return Future.succeededFuture(id);
       });
   }

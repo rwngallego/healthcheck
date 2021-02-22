@@ -1,4 +1,4 @@
-package org.rowinson.healthcheck;
+package org.rowinson.healthcheck.framework;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;

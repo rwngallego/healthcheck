@@ -21,7 +21,7 @@ val junitJupiterVersion = "5.7.0"
 val jacksonVersion = "2.11.3"
 val mySqlClient = "4.0.2"
 
-val mainVerticleName = "org.rowinson.healthcheck.adapters.verticles.MainVerticle"
+val mainVerticleName = "org.rowinson.healthcheck.framework.verticles.MainVerticle"
 val launcherClassName = "org.rowinson.healthcheck.CustomLauncher"
 
 val watchForChange = "src/**/*"
@@ -33,13 +33,13 @@ application {
 
 dependencies {
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
-  implementation("io.vertx:vertx-web-validation")
-  implementation("io.vertx:vertx-web")
-  implementation("io.vertx:vertx-web-api-contract")
+  implementation("io.vertx:vertx-web:$vertxVersion")
+  implementation("io.vertx:vertx-web-api-contract:$vertxVersion")
   implementation("io.vertx:vertx-micrometer-metrics:$vertxVersion")
   implementation("io.vertx:vertx-config:$vertxVersion")
   implementation("io.vertx:vertx-mysql-client:$vertxVersion")
   implementation("io.vertx:vertx-sql-client-templates:$vertxVersion")
+  implementation("io.vertx:vertx-web-validation:$vertxVersion")
   implementation("mysql:mysql-connector-java:8.0.15")
   implementation("io.micrometer:micrometer-registry-prometheus:latest.release")
   implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")

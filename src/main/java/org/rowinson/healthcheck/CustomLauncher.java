@@ -12,7 +12,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.micrometer.MicrometerMetricsOptions;
 import io.vertx.micrometer.VertxPrometheusOptions;
 import io.vertx.micrometer.backends.BackendRegistries;
-import org.rowinson.healthcheck.adapters.verticles.MainVerticle;
+import org.rowinson.healthcheck.framework.verticles.MainVerticle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
