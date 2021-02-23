@@ -1,4 +1,4 @@
-package org.rowinson.healthcheck.adapters.handlers.service;
+package org.rowinson.healthcheck.adapters.handlers.user;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;

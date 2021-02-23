@@ -17,6 +17,7 @@ public class TestService extends AbstractDatabaseTest {
     service.setUserId(12);
     service.setName("new-test-service");
     service.setUrl("192.168.0.1");
+    service.setStatus("FAIL");
     service.setCreatedAt(newCreatedAt);
     service.setUpdatedAt(newUpdatedAt);
 
@@ -25,6 +26,7 @@ public class TestService extends AbstractDatabaseTest {
     Assertions.assertEquals(12, json.getLong("user_id"));
     Assertions.assertEquals("new-test-service", json.getString("name"));
     Assertions.assertEquals("192.168.0.1", json.getString("url"));
+    Assertions.assertEquals("FAIL", json.getString("status"));
     Assertions.assertNotNull(json.getString("created_at"));
     Assertions.assertNotNull(json.getString("updated_at"));
   }

@@ -7,14 +7,19 @@ import io.vertx.mysqlclient.MySQLConnectOptions;
 import io.vertx.mysqlclient.MySQLPool;
 import io.vertx.sqlclient.PoolOptions;
 import org.flywaydb.core.Flyway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is in charge of the DB interactions
  */
 public class Database {
 
+  public static final Logger LOG = LoggerFactory.getLogger(Database.class);
+
   /**
    * Executes the DB migrations
+   *
    * @param vertx
    * @param config
    * @return
@@ -39,6 +44,7 @@ public class Database {
 
   /**
    * Gets the DB pool using the provided config options
+   *
    * @param vertx
    * @param config
    * @return
@@ -59,18 +65,22 @@ public class Database {
 
   /**
    * Executes the DB clean up
+   *
    * @param pool
    * @return
    */
   public static Future<Boolean> Cleanup(MySQLPool pool) {
     return pool.withConnection(connection -> connection
-        .query("DELETE FROM services")
-        .execute()
-        .compose(ra ->
-          connection.query("DELETE FROM users")
-            .execute()
-          .compose(rb -> Future.succeededFuture(true))
-        )
+      .query("DELETE FROM services")
+      .execute()
+      .compose(ra ->
+        connection.query("DELETE FROM users")
+          .execute())
+      .compose(rb -> {
+        LOG.warn("Database records were cleaned up");
+        return Future.succeededFuture(true);
+      })
+
     );
   }
 }

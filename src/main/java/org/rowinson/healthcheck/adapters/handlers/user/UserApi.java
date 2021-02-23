@@ -13,5 +13,6 @@ public class UserApi {
     UserApplication app = new UserApplication(repo);
 
     router.post(ApiServerVerticle.PREFIX + "/users").handler(new CreateUserHandler(app));
+    router.get(ApiServerVerticle.PREFIX + "/users").handler(new GetUsersHandler(app));
   }
 }

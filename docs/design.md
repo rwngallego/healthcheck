@@ -17,7 +17,7 @@ The following assumptions were made as part of the design:
   and the CQRS pattern to optimize the reads/writes and improve availability.
   The details of that potential architecture can be found the in
   the [V2 design document](design.v2.md).
-
+- For time constrains, the validation is plain, otherwise it would use https://vertx.io/docs/vertx-web-validation/java/#_using_vert_x_web_validation
 ## Architecture
 
 The application will have HTTP handlers, the Application logic and the DB
@@ -30,7 +30,7 @@ There will be a pool of workers (Pollers) in charge of performing
 periodic health checks to the services. They will receive
 events when adding/removing/updating a service and produce events
 with the status of the services. Additionally, there will be
-a Push Service in charge of pushing the real updates to the
+a Push Service (Extra) in charge of pushing the real updates to the
 clients through [web sockets](https://vertx.io/blog/real-time-bidding-with-websockets-and-vert-x/).
 In this case, the event bus plays a crucial
 role in the coordination of those components.
@@ -38,7 +38,7 @@ role in the coordination of those components.
 ### Worker Polls: Pools, Back pressure and Incremental back-off
 
 The workers will use a back-pressure strategy: there will be a pool of
-workers, and a queue of jobs to be procesed (queue of services to check).
+workers, and a queue of jobs to be processed (queue of services to check).
 The workers will pick up jobs when they are available to process them.
 It's not the application forcing a given worker to do a certain job.
 
@@ -88,7 +88,7 @@ and can be viewed at: [http://localhost:9090](http://localhost:9090)
 - Workers: They're in charge of performing HTTP requests to the services
   and produce events with their status. There will be a queue of services
   to check.
-- Push Service: They will receive events from the event bus and communicate
+- Push Service (Extra): They will receive events from the event bus and communicate
   with the Browsers through a socket connection. In the case of Vertx, that
   communication can be done by using the Event bus.
 
@@ -135,9 +135,8 @@ There will be adapters/application/domain/framework layers.
   - [ ] Implement the Handlers
   - [ ] Implement the Application
   - [ ] Implement the Worker pool
-  - [ ] Implement the Push Service
+  - [ ] Extra: Implement the Push Service
 - [ ] Frontend:
-  - [ ] Create the Registration/Login page
   - [ ] Create the Dashboard page with the list of services and their status
   - [ ] Services CRUD:
     - [ ] Add
@@ -150,7 +149,7 @@ There will be adapters/application/domain/framework layers.
 ### Backend
 
 - Vert.x
-- Postgres
+- MySql
 - Vertx Web sockets to push live service status updates
 - Asynchronous logging (Log4j 2/Slf4j)
 - Clustering through Hazelcast

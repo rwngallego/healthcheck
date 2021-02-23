@@ -19,13 +19,15 @@ public class GetServicesHandler implements Handler<RoutingContext> {
 
   @Override
   public void handle(RoutingContext context) {
-    long userId = 1;
+    var userIdString = context.pathParam("userId");
+    var userId = Long.parseLong(userIdString);
+
     serviceApplication.getBelongingServices(userId, 0, 10, "name", "asc")
       .onSuccess(services -> {
         JsonArray result = new JsonArray();
         services.stream().forEach(a -> result.add(a));
 
-        LOG.info("{} | {}", context.normalizedPath(), result.encode());
+        LOG.info("Get services response: {}", result.encode());
 
         context.response()
           .putHeader(Http.CONTENT_TYPE, Http.APPLICATION_JSON)
