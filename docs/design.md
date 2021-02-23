@@ -29,7 +29,7 @@ components (workers/push service) that will comunicate through it.
 There will be a pool of workers (Pollers) in charge of performing
 periodic health checks to the services. They will receive
 events when adding/removing/updating a service and produce events
-with the status of the services. Additionally, there will be
+with the status of the services. Additionally, there can be
 a Push Service (Extra) in charge of pushing the real updates to the
 clients through [web sockets](https://vertx.io/blog/real-time-bidding-with-websockets-and-vert-x/).
 In this case, the event bus plays a crucial
@@ -55,8 +55,8 @@ cluster by sharing their state.
 The application relies on the Vertx capabilities to scale using
 clustering through [Hazelcast](https://hazelcast.com/blog/vert-x-cluster/).
 This means, the shared memory
-will be used in the components that are intended to work in a
-clustered arrangement. The application will be configured to
+can be used in the components that are intended to work in a
+clustered arrangement. The application can be configured to
 support multiple nodes with multiple Verticles deployed.
 
 ### Dependency Inversion Principle and testability
@@ -132,8 +132,8 @@ There will be adapters/application/domain/framework layers.
 - Backend:
   - [x] Define the API using OpenAPI. Url: [http://localhost:8888/openapi](http://localhost:8888/swagger)
   - [x] Implement the Repositories
-  - [ ] Implement the Handlers
-  - [ ] Implement the Application
+  - [x] Implement the Handlers
+  - [x] Implement the Application
   - [ ] Implement the Worker pool
   - [ ] Extra: Implement the Push Service
 - [ ] Frontend:
