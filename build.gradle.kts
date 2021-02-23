@@ -40,6 +40,7 @@ dependencies {
   implementation("io.vertx:vertx-mysql-client:$vertxVersion")
   implementation("io.vertx:vertx-sql-client-templates:$vertxVersion")
   implementation("io.vertx:vertx-web-validation:$vertxVersion")
+  implementation("io.vertx:vertx-web-client:$vertxVersion")
   implementation("mysql:mysql-connector-java:8.0.15")
   implementation("io.micrometer:micrometer-registry-prometheus:latest.release")
   implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")

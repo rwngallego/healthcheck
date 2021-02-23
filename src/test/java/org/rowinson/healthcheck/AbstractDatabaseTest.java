@@ -14,25 +14,32 @@ import org.rowinson.healthcheck.adapters.repositories.MySQLServiceRepository;
 import org.rowinson.healthcheck.adapters.repositories.MySQLUserRepository;
 import org.rowinson.healthcheck.framework.Config;
 import org.rowinson.healthcheck.framework.Database;
+import org.rowinson.healthcheck.framework.verticles.MainVerticle;
 
 import java.text.SimpleDateFormat;
 
 @ExtendWith(VertxExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public abstract class AbstractHealthCheckTest {
+public abstract class AbstractDatabaseTest {
   public MySQLServiceRepository serviceRepo;
   public MySQLUserRepository userRepo;
   public MySQLPool pool;
 
+  /**
+   * Configures vertx, setup the database and clean it on every run
+   * @param vertx
+   * @param testContext
+   */
   @BeforeAll
-  void setupVertx(Vertx vertx, VertxTestContext testContext) {
+  void setup_vertx(Vertx vertx, VertxTestContext testContext) {
     // Configure mapper
-    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+    SimpleDateFormat df = new SimpleDateFormat(MainVerticle.DATE_FORMAT);
     ObjectMapper mapper = io.vertx.core.json.jackson.DatabindCodec.mapper();
     mapper.registerModule(new JavaTimeModule());
     mapper.setDateFormat(df);
 
-    Config.GetValues(vertx, Config.CONF_CONFIG_TEST_JSON)
+    Config.SetJsonConfig(Config.CONF_CONFIG_TEST_JSON);
+    Config.GetValues(vertx)
       .compose(config -> {
         MySQLPool pool = Database.GetPool(vertx, config);
 
@@ -50,7 +57,7 @@ public abstract class AbstractHealthCheckTest {
   }
 
   @AfterEach
-  void cleanEach(VertxTestContext testContext) {
+  void clean_each(VertxTestContext testContext) {
     // We cleanup the DB after each test
     Database.Cleanup(this.pool)
       .onSuccess(r -> testContext.completeNow())

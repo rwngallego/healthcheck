@@ -20,20 +20,23 @@ public class CreateServiceHandler implements Handler<RoutingContext>{
 
   @Override
   public void handle(RoutingContext context) {
-    long userId = 1;
+    var userIdString = context.pathParam("userId");
+    var userId = Long.parseLong(userIdString);
     var params = context.getBodyAsJson();
-    var service = params.mapTo(Service.class);
+    var serviceToCreate = params.mapTo(Service.class);
 
-    serviceApplication.addServiceToUser(userId, service)
-      .onSuccess(serviceId -> {
+    LOG.info("Creating service for userId {}", userId);
+
+    serviceApplication.addServiceToUser(userId, serviceToCreate)
+      .onFailure(Http.handleFailure(context, "Could not create the service"))
+      .compose(serviceId -> serviceApplication.getServiceById(userId, serviceId))
+      .onFailure(Http.handleFailure(context, "Could not retrieve the created service"))
+      .onSuccess(service -> {
+        LOG.info("Service created: {}", service);
         context.response()
           .putHeader(Http.CONTENT_TYPE, Http.APPLICATION_JSON)
           .setStatusCode(200)
-          .end();
-      })
-      .onFailure(error -> {
-        LOG.error("Could not create the service: ", error);
-        context.failure();
+          .end(service.toJson().toBuffer());
       });
   }
 }

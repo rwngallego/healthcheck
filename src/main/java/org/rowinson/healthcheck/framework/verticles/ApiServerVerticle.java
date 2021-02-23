@@ -6,7 +6,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.micrometer.PrometheusScrapingHandler;
 import io.vertx.mysqlclient.MySQLPool;
@@ -14,6 +14,7 @@ import org.rowinson.healthcheck.adapters.handlers.service.ServiceApi;
 import org.rowinson.healthcheck.adapters.handlers.user.UserApi;
 import org.rowinson.healthcheck.framework.Config;
 import org.rowinson.healthcheck.framework.Database;
+import org.rowinson.healthcheck.framework.Http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,16 +38,18 @@ public class ApiServerVerticle extends AbstractVerticle {
         // each RestApi verticle has 1 DB pool
         MySQLPool pool = Database.GetPool(vertx, config);
 
-        // attach the handlers
+        // general handlers
+        router.route().handler(BodyHandler.create());
+        router.route().handler(Http.handleLogging());
+        router.errorHandler(500, Http.handleRouterError());
+
+        // attach the api handlers
         ServiceApi.attachHandlers(router, pool);
         UserApi.attachHandlers(router, pool);
 
-        // register all the other routes
+        // register other routes
         router.route("/metrics").handler(PrometheusScrapingHandler.create());
         router.route("/*").handler(StaticHandler.create());
-
-        // error handling
-        router.errorHandler(500, handleErrorRouter());
 
         // start the HTTP server
         vertx.createHttpServer().
@@ -75,21 +78,6 @@ public class ApiServerVerticle extends AbstractVerticle {
       } else {
         startPromise.fail(http.cause());
         LOG.error("Error: ", http.cause().toString());
-      }
-    };
-  }
-
-  /**
-   * Handle the errors occurred in the router
-   *
-   * @return
-   */
-  private Handler<RoutingContext> handleErrorRouter() {
-    return rc -> {
-      System.err.println("Handling failure");
-      Throwable failure = rc.failure();
-      if (failure != null) {
-        failure.printStackTrace();
       }
     };
   }

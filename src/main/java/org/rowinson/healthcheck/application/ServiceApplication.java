@@ -23,7 +23,7 @@ public class ServiceApplication {
    * @return
    */
   public Future<ArrayList<Service>> getBelongingServices(Long userId, int offset, int size, String orderBy, String orderAsc) {
-    return repo.GetAllServices(userId, offset, size, orderBy, orderAsc);
+    return repo.getAllServices(userId, offset, size, orderBy, orderAsc);
   }
 
   /**
@@ -34,6 +34,16 @@ public class ServiceApplication {
    */
   public Future<Long> addServiceToUser(Long userId, Service service) {
     service.setUserId(userId);
-    return repo.CreateService(service);
+    return repo.createService(service);
+  }
+
+  /**
+   * Get a service from the user by the given service id
+   * @param userId
+   * @param serviceId
+   * @return
+   */
+  public Future<Service> getServiceById(Long userId, Long serviceId) {
+    return repo.getService(userId, serviceId);
   }
 }

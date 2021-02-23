@@ -9,7 +9,9 @@ import java.util.ArrayList;
  * Interface for the DB access related to users
  */
 public interface UserRepository {
-  Future<ArrayList<User>> GetAllUsers();
+  Future<ArrayList<User>> getAllUsers();
 
-  Future<Long> CreateUser(User user);
+  Future<User> getUser(Long userId);
+
+  Future<Long> createUser(User user);
 }

@@ -22,27 +22,39 @@ public class Config {
   public static final String DB_POOL_SIZE = "DB_POOL_SIZE";
   public static final String CONF_CONFIG_JSON = "conf/config.json";
   public static final String CONF_CONFIG_TEST_JSON = "conf/config.test.json";
+  private static JsonObject options = null;
+  private static String configFile = CONF_CONFIG_JSON;
 
   /**
-   * Get the configuration object from multiple stores.
-   * First get the values from the default json file and then override them with the
-   * ENV values.
-   * @param vertx
-   * @return
+   * Sets the location of the json config
+   * @param filePath
    */
-  public static Future<JsonObject> GetValues(Vertx vertx) {
-    return GetValues(vertx, CONF_CONFIG_JSON);
+  public static void SetJsonConfig(String filePath) {
+    configFile = filePath;
   }
 
   /**
    * Get the configuration object from multiple stores, primarily from the
-   * specified confConfigJson file. First get the values from the json file
+   * JsonConfig file. First get the values from the json file
    * and then override them with the ENV values.
    * @param vertx
-   * @param confConfigJson
    * @return
    */
-  public static Future<JsonObject> GetValues(Vertx vertx, String confConfigJson) {
+  public static Future<JsonObject> GetValues(Vertx vertx) {
+    // We get it from memory in case they're available from previous calls
+    // Note: This can be improved by using the Vertx config changes detection.
+    if (options != null) {
+      return Future.succeededFuture(options);
+    }
+
+    return retrieveOptions(vertx, configFile)
+      .compose(retrieved -> {
+        options = retrieved;
+        return Future.succeededFuture(options);
+      });
+  }
+
+  private static Future<JsonObject> retrieveOptions(Vertx vertx, String confConfigJson) {
     // Stores
     ConfigStoreOptions fileStore = new ConfigStoreOptions()
       .setType("file")
@@ -52,8 +64,8 @@ public class Config {
 
     ConfigRetrieverOptions options = new ConfigRetrieverOptions()
       .addStore(fileStore).addStore(env);
+
     ConfigRetriever retriever = ConfigRetriever.create(vertx, options);
     return retriever.getConfig();
   }
-
 }

@@ -9,17 +9,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.rowinson.healthcheck.AbstractHealthCheckTest;
+import org.rowinson.healthcheck.AbstractDatabaseTest;
 import org.rowinson.healthcheck.domain.Service;
 import org.rowinson.healthcheck.domain.User;
 
 @ExtendWith(VertxExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class TestMySQLServiceRepository extends AbstractHealthCheckTest {
+public class TestMySQLServiceRepository extends AbstractDatabaseTest {
   Long userId;
 
   @BeforeEach
-  void setupEach(VertxTestContext testContext) {
+  void setup_each(VertxTestContext testContext) {
     createUser()
       .onSuccess(userId -> {
         this.userId = userId;
@@ -29,9 +29,9 @@ public class TestMySQLServiceRepository extends AbstractHealthCheckTest {
   }
 
   @Test
-  void testGetAllServices(VertxTestContext testContext) {
+  void test_get_all_services(VertxTestContext testContext) {
     createTwoServices()
-      .compose(next -> serviceRepo.GetAllServices(this.userId, 0, 10, "", ""))
+      .compose(next -> serviceRepo.getAllServices(this.userId, 0, 10, "", ""))
       .onSuccess(results -> {
         Assertions.assertEquals(2, results.size());
         testContext.completeNow();
@@ -41,14 +41,14 @@ public class TestMySQLServiceRepository extends AbstractHealthCheckTest {
   }
 
   @Test
-  void testGetService(VertxTestContext testContext) {
+  void test_get_service(VertxTestContext testContext) {
     Service service = new Service();
     service.setUserId(this.userId);
     service.setName("test-service-1");
     service.setUrl("test-url-1");
 
-    serviceRepo.CreateService(service)
-      .compose(serviceId -> serviceRepo.GetService(this.userId, serviceId))
+    serviceRepo.createService(service)
+      .compose(serviceId -> serviceRepo.getService(this.userId, serviceId))
       .onSuccess(result -> {
         Assertions.assertEquals("test-service-1", result.getName());
         Assertions.assertEquals("test-url-1", result.getUrl());
@@ -60,13 +60,13 @@ public class TestMySQLServiceRepository extends AbstractHealthCheckTest {
   }
 
   @Test
-  void testCreateService(VertxTestContext testContext) {
+  void test_create_service(VertxTestContext testContext) {
     Service service = new Service();
     service.setUserId(userId);
     service.setName("test-service");
     service.setUrl("http://127.0.0.1/");
-    serviceRepo.CreateService(service)
-      .compose(serviceId -> serviceRepo.GetService(userId, serviceId))
+    serviceRepo.createService(service)
+      .compose(serviceId -> serviceRepo.getService(userId, serviceId))
       .onSuccess(created -> {
         Assertions.assertEquals("test-service", created.getName());
         Assertions.assertEquals("http://127.0.0.1/", created.getUrl());
@@ -76,19 +76,19 @@ public class TestMySQLServiceRepository extends AbstractHealthCheckTest {
   }
 
   @Test
-  void testUpdateService(VertxTestContext testContext) {
+  void test_update_service(VertxTestContext testContext) {
     Service service = new Service();
     service.setUserId(userId);
     service.setName("test-service-update");
     service.setUrl("http://127.0.0.1/");
-    serviceRepo.CreateService(service)
+    serviceRepo.createService(service)
       .compose(serviceId -> {
         service.setId(serviceId);
         service.setName("test-service-update-after");
         service.setUrl("http://192.168.0.1/");
-        return serviceRepo.UpdateService(service);
+        return serviceRepo.updateService(service);
       })
-      .compose(next -> serviceRepo.GetService(userId, service.getId()))
+      .compose(next -> serviceRepo.getService(userId, service.getId()))
       .onSuccess(updated -> {
         Assertions.assertEquals("test-service-update-after", updated.getName());
         Assertions.assertEquals("http://192.168.0.1/", updated.getUrl());
@@ -98,18 +98,18 @@ public class TestMySQLServiceRepository extends AbstractHealthCheckTest {
   }
 
   @Test
-  void testDeleteService(VertxTestContext testContext) {
+  void test_delete_service(VertxTestContext testContext) {
     long serviceId;
     Service service = new Service();
     service.setUserId(userId);
     service.setName("test-service-update");
     service.setUrl("http://127.0.0.1/");
-    serviceRepo.CreateService(service)
+    serviceRepo.createService(service)
       .compose(id -> {
         service.setId(id);
-        return serviceRepo.DeleteService(id);
+        return serviceRepo.deleteService(id);
       })
-      .compose(next -> serviceRepo.GetService(userId, service.getId()))
+      .compose(next -> serviceRepo.getService(userId, service.getId()))
       .onSuccess(retrieved -> {
         Assertions.assertNull(retrieved);
         testContext.completeNow();
@@ -120,7 +120,7 @@ public class TestMySQLServiceRepository extends AbstractHealthCheckTest {
   private Future<Long> createUser() {
     User user = new User();
     user.setName("test-user");
-    return userRepo.CreateUser(user);
+    return userRepo.createUser(user);
   }
 
   private CompositeFuture createTwoServices() {
@@ -133,6 +133,6 @@ public class TestMySQLServiceRepository extends AbstractHealthCheckTest {
     service2.setUserId(this.userId);
     service2.setName("test-service-2");
     service2.setUrl("test-url-2");
-    return CompositeFuture.all(serviceRepo.CreateService(service1), serviceRepo.CreateService(service2));
+    return CompositeFuture.all(serviceRepo.createService(service1), serviceRepo.createService(service2));
   }
 }

@@ -2,9 +2,9 @@ package org.rowinson.healthcheck.domain;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.rowinson.healthcheck.AbstractHealthCheckTest;
+import org.rowinson.healthcheck.AbstractDatabaseTest;
 
-public class TestUser extends AbstractHealthCheckTest {
+public class TestUser extends AbstractDatabaseTest {
   @Test
   void testUserToJson () {
     User user = new User();

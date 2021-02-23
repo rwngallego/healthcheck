@@ -37,10 +37,10 @@ public class MySQLServiceRepository implements ServiceRepository {
    * @return
    */
   @Override
-  public Future<ArrayList<Service>> GetAllServices(Long userId, int offset, int size, String orderBy, String orderAsc) {
+  public Future<ArrayList<Service>> getAllServices(Long userId, int offset, int size, String orderBy, String orderAsc) {
     LOG.info("Getting all the services from DB for userId: {}", userId);
 
-    return SqlTemplate.forQuery(pool, "SELECT s.id, s.user_id, s.name, s.url, s.created_at, s.updated_at FROM services s WHERE s.user_id = #{userId}")
+    return SqlTemplate.forQuery(pool, "SELECT s.id, s.user_id, s.name, s.url, s.status, s.created_at, s.updated_at FROM services s WHERE s.user_id = #{userId}")
       .mapTo(Service.class)
       .execute(Collections.singletonMap("userId", userId))
       .compose(results -> {
@@ -60,14 +60,14 @@ public class MySQLServiceRepository implements ServiceRepository {
    * @return
    */
   @Override
-  public Future<Service> GetService(Long userId, Long serviceId) {
+  public Future<Service> getService(Long userId, Long serviceId) {
     LOG.info("Getting service from DB for userId: {}, service: {}", userId, serviceId);
 
     Map<String, Object> params = new HashMap<>();
     params.put("id", serviceId);
     params.put("userId", userId);
     return SqlTemplate.forQuery(pool,
-      "SELECT s.id, s.user_id, s.name, s.url, s.created_at, s.updated_at FROM services s WHERE s.id = #{id} AND s.user_id = #{userId}")
+      "SELECT s.id, s.user_id, s.name, s.url, s.status, s.created_at, s.updated_at FROM services s WHERE s.id = #{id} AND s.user_id = #{userId}")
       .mapTo(Service.class)
       .execute(params)
       .compose(results -> {
@@ -85,7 +85,7 @@ public class MySQLServiceRepository implements ServiceRepository {
    * @return
    */
   @Override
-  public Future<Long> CreateService(Service service) {
+  public Future<Long> createService(Service service) {
     LOG.info("Creating service in DB: {}", service.toString());
 
     Map<String, Object> params = new HashMap<>();
@@ -109,7 +109,7 @@ public class MySQLServiceRepository implements ServiceRepository {
    * @return
    */
   @Override
-  public Future<Void> UpdateService(Service service) {
+  public Future<Void> updateService(Service service) {
     LOG.info("Updating service in DB: {}", service.toString());
 
     Map<String, Object> params = new HashMap<>();
@@ -131,7 +131,7 @@ public class MySQLServiceRepository implements ServiceRepository {
    * @return
    */
   @Override
-  public Future<Void> DeleteService(Long serviceId) {
+  public Future<Void> deleteService(Long serviceId) {
     LOG.info("Deleting service from DB: {}", serviceId);
 
     return SqlTemplate.forUpdate(pool, "DELETE FROM services WHERE id = #{id}")

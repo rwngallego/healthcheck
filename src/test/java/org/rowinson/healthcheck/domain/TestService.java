@@ -2,11 +2,11 @@ package org.rowinson.healthcheck.domain;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.rowinson.healthcheck.AbstractHealthCheckTest;
+import org.rowinson.healthcheck.AbstractDatabaseTest;
 
 import java.time.LocalDateTime;
 
-public class TestService extends AbstractHealthCheckTest {
+public class TestService extends AbstractDatabaseTest {
   @Test
   void testServiceToJson () {
     LocalDateTime newCreatedAt = LocalDateTime.now();

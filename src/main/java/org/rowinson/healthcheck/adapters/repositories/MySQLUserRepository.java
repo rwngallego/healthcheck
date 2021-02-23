@@ -33,7 +33,7 @@ public class MySQLUserRepository implements UserRepository {
    * @return
    */
   @Override
-  public Future<ArrayList<User>> GetAllUsers() {
+  public Future<ArrayList<User>> getAllUsers() {
     LOG.info("Getting all the users from DB");
 
     return SqlTemplate.forQuery(pool,
@@ -50,12 +50,34 @@ public class MySQLUserRepository implements UserRepository {
   }
 
   /**
+   * Get the user (DEMO Only)
+   *
+   * @param userId
+   * @return
+   */
+  @Override
+  public Future<User> getUser(Long userId) {
+    LOG.info("Getting the user {} from DB", userId);
+
+    return SqlTemplate.forQuery(pool,
+      "SELECT u.id, u.name FROM users u WHERE u.id = #{id}")
+      .mapTo(User.class)
+      .execute(Collections.singletonMap("id", userId))
+      .compose(results -> {
+        var result = results.iterator().hasNext() ? results.iterator().next() : null;
+
+        LOG.debug("Retrieved: {}", result);
+        return Future.succeededFuture(result);
+      });
+  }
+
+  /**
    * Create the user
    *
    * @param user
    * @return
    */
-  public Future<Long> CreateUser(User user) {
+  public Future<Long> createUser(User user) {
     LOG.info("Creating user in DB, name: {}", user.getName());
 
     Map<String, Object> params = new HashMap<>();

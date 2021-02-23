@@ -15,6 +15,7 @@ public class ServiceApi {
     ServiceRepository serviceRepository = new MySQLServiceRepository(pool);
     ServiceApplication serviceApplication = new ServiceApplication(serviceRepository);
 
-    router.get(ApiServerVerticle.PREFIX + "/services").handler(new GetServicesHandler(serviceApplication));
+    router.get(ApiServerVerticle.PREFIX + "/users/:userId/services").handler(new GetServicesHandler(serviceApplication));
+    router.post(ApiServerVerticle.PREFIX + "/users/:userId/services").handler(new CreateServiceHandler(serviceApplication));
   }
 }
