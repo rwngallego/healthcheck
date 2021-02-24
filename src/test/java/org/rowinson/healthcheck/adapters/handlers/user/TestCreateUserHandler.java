@@ -2,8 +2,6 @@ package org.rowinson.healthcheck.adapters.handlers.user;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.client.WebClient;
-import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +18,6 @@ public class TestCreateUserHandler extends AbstractVerticleTest {
     JsonObject params = new JsonObject();
     params.put("name", "test-user");
 
-    WebClient client = WebClient.create(vertx, new WebClientOptions().setDefaultPort(9999));
     client.post(API_V1_USERS)
       .sendJsonObject(params)
       .onComplete(testContext.succeeding(response -> {

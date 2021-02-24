@@ -37,12 +37,32 @@ public class MySQLServiceRepository implements ServiceRepository {
    * @return
    */
   @Override
-  public Future<ArrayList<Service>> getAllServices(Long userId, int offset, int size, String orderBy, String orderAsc) {
+  public Future<ArrayList<Service>> getPaginatedServices(Long userId, int offset, int size, String orderBy, String orderAsc) {
     LOG.info("Getting all the services from DB for userId: {}", userId);
 
     return SqlTemplate.forQuery(pool, "SELECT s.id, s.user_id, s.name, s.url, s.status, s.created_at, s.updated_at FROM services s WHERE s.user_id = #{userId}")
       .mapTo(Service.class)
       .execute(Collections.singletonMap("userId", userId))
+      .compose(results -> {
+        var services = new ArrayList<Service>();
+        results.forEach(e -> services.add(e));
+
+        LOG.debug("Retrieved: {}", services.toString());
+        return Future.succeededFuture(services);
+      });
+  }
+
+  /**
+   * Get all the registered services
+   * @return
+   */
+  @Override
+  public Future<ArrayList<Service>> getAllServices() {
+    LOG.info("Getting all the services from DB");
+
+    return SqlTemplate.forQuery(pool, "SELECT s.id, s.user_id, s.name, s.url, s.status, s.created_at, s.updated_at FROM services s")
+      .mapTo(Service.class)
+      .execute(Collections.emptyMap())
       .compose(results -> {
         var services = new ArrayList<Service>();
         results.forEach(e -> services.add(e));

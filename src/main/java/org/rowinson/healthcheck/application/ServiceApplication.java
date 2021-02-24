@@ -23,7 +23,15 @@ public class ServiceApplication {
    * @return
    */
   public Future<ArrayList<Service>> getBelongingServices(Long userId, int offset, int size, String orderBy, String orderAsc) {
-    return repo.getAllServices(userId, offset, size, orderBy, orderAsc);
+    return repo.getPaginatedServices(userId, offset, size, orderBy, orderAsc);
+  }
+
+  /**
+   * Return all the services
+   * @return
+   */
+  public Future<ArrayList<Service>> getRegisteredServices() {
+    return repo.getAllServices();
   }
 
   /**

@@ -31,7 +31,7 @@ public class TestMySQLServiceRepository extends AbstractDatabaseTest {
   @Test
   void test_get_all_services(VertxTestContext testContext) {
     createTwoServices()
-      .compose(next -> serviceRepo.getAllServices(this.userId, 0, 10, "", ""))
+      .compose(next -> serviceRepo.getPaginatedServices(this.userId, 0, 10, "", ""))
       .onSuccess(results -> {
         Assertions.assertEquals(2, results.size());
         testContext.completeNow();

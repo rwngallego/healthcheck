@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ApiServerVerticle extends AbstractVerticle {
 
-  private static final Logger LOG = LoggerFactory.getLogger(MainVerticle.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ApiServerVerticle.class);
   public static final String PREFIX = "/api/v1";
 
   @Override

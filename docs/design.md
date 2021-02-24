@@ -35,17 +35,18 @@ clients through [web sockets](https://vertx.io/blog/real-time-bidding-with-webso
 In this case, the event bus plays a crucial
 role in the coordination of those components.
 
-### Worker Polls: Pools, Back pressure and Incremental back-off
+### Pollers: Pools, Back pressure and Linear back-off
 
 The workers will use a back-pressure strategy: there will be a pool of
 workers, and a queue of jobs to be processed (queue of services to check).
 The workers will pick up jobs when they are available to process them.
 It's not the application forcing a given worker to do a certain job.
 
-Internally, the workers will use an incremental back-off mechanism
+Internally, the workers will use an incremental linear back-off mechanism
 to retry the health checks incrementally and protect themselves
 from failed endpoints. When a service cannot be pinged after a configurable
-Max timeout, it will transition the given service to a FAIL state.
+Max timeout, it will transition the given service to a FAIL state. This can
+be further improved by using exponential backoff: https://docs.aws.amazon.com/general/latest/gr/api-retries.html
 
 For scalability, the workers can be scaled horizontally through a Hazelcast
 cluster by sharing their state.
