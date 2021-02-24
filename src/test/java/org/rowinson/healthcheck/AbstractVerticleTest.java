@@ -1,5 +1,6 @@
 package org.rowinson.healthcheck;
 
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
@@ -7,7 +8,6 @@ import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import io.vertx.mysqlclient.MySQLPool;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.rowinson.healthcheck.framework.Config;
@@ -24,7 +24,6 @@ public abstract class AbstractVerticleTest {
 
   @BeforeAll
   void deploy_main_verticle(Vertx vertx, VertxTestContext testContext) {
-
     this.client = WebClient.create(vertx, new WebClientOptions().setDefaultPort(9999));
 
     Config.SetJsonConfig(Config.CONF_CONFIG_TEST_JSON);
@@ -37,11 +36,8 @@ public abstract class AbstractVerticleTest {
       .onSuccess(next -> testContext.completeNow());
   }
 
-  @BeforeEach
-  void clean_each(VertxTestContext testContext) {
+  protected Future<Boolean> cleanEach() {
     // We cleanup the DB after each test
-    Database.Cleanup(this.pool)
-      .onSuccess(r -> testContext.completeNow())
-      .onFailure(r -> testContext.failNow(r));
+    return Database.Cleanup(this.pool);
   }
 }

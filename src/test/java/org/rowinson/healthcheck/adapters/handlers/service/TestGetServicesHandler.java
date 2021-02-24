@@ -16,8 +16,8 @@ public class TestGetServicesHandler extends AbstractVerticleTest {
 
   @BeforeEach
   void setup(Vertx vertx, VertxTestContext testContext) {
-    client.post(API_V1_USERS)
-      .sendJsonObject(new JsonObject().put("name", "test-user"))
+    this.cleanEach()
+      .compose(next -> client.post(API_V1_USERS).sendJsonObject(new JsonObject().put("name", "test-user")))
       .onFailure(err -> testContext.failNow(err))
       .onSuccess(response -> {
         this.userId = response.bodyAsJsonObject().getLong("id");

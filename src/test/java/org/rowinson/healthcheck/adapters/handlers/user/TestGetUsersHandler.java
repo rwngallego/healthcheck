@@ -14,7 +14,8 @@ public class TestGetUsersHandler extends AbstractVerticleTest {
 
   @BeforeEach
   void setup(Vertx vertx, VertxTestContext testContext) {
-    createUser("user-1")
+    this.cleanEach()
+      .compose(next -> createUser("user-1"))
       .compose(next -> createUser("user-2"))
       .onFailure(err -> testContext.failNow(err))
       .onComplete(testContext.succeeding(response -> {

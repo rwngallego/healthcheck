@@ -43,12 +43,14 @@ public class MainVerticle extends AbstractVerticle {
     Config.GetValues(vertx)
       .compose(config -> Database.Migrate(vertx, config))
       .compose(next -> vertx.deployVerticle(ApiServerVerticle.class.getName(), new DeploymentOptions().setInstances(Runtime.getRuntime().availableProcessors())))
+      .compose(next -> vertx.deployVerticle(PollerVerticle.class.getName(), new DeploymentOptions().setWorker(true)))
       .onFailure(error -> {
-        LOG.error("Failed to deploy {} verticle {}", ApiServerVerticle.class.getName(), error);
+        LOG.error("Failed to deploy {} verticles", error);
         startPromise.fail(error);
       })
       .onSuccess(id -> {
         LOG.info("{} deployed, id: {}", ApiServerVerticle.class.getName(), id);
+        LOG.info("{} deployed, id: {}", PollerVerticle.class.getName(), id);
         startPromise.complete();
       });
   }

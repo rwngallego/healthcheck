@@ -44,7 +44,7 @@ public class ApiServerVerticle extends AbstractVerticle {
         router.errorHandler(500, Http.handleRouterError());
 
         // attach the api handlers
-        ServiceApi.attachHandlers(router, pool);
+        ServiceApi.attachHandlers(vertx, router, pool);
         UserApi.attachHandlers(router, pool);
 
         // register other routes

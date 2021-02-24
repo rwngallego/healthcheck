@@ -20,8 +20,8 @@ public class TestCreateServiceHandler extends AbstractVerticleTest {
 
   @BeforeEach
   void setup(Vertx vertx, VertxTestContext testContext) {
-    client.post(API_V1_USERS)
-      .sendJsonObject(new JsonObject().put("name", "test-user"))
+    this.cleanEach()
+      .compose(next -> client.post(API_V1_USERS).sendJsonObject(new JsonObject().put("name", "test-user")))
       .onFailure(err -> testContext.failNow(err))
       .onComplete(testContext.succeeding(response -> {
         this.userId = response.bodyAsJsonObject().getLong("id");
@@ -41,7 +41,7 @@ public class TestCreateServiceHandler extends AbstractVerticleTest {
       .onComplete(testContext.succeeding(response -> {
         var body = response.bodyAsJsonObject();
         var service = body.mapTo(Service.class);
-        
+
         Assertions.assertEquals("test-service", service.getName());
         Assertions.assertEquals("127.0.0.1", service.getUrl());
         Assertions.assertEquals("UNKNOWN", service.getStatus());

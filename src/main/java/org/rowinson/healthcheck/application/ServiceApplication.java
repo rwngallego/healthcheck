@@ -54,4 +54,14 @@ public class ServiceApplication {
   public Future<Service> getServiceById(Long userId, Long serviceId) {
     return repo.getService(userId, serviceId);
   }
+
+  /**
+   * Delete a service from the user
+   * @param userId
+   * @param serviceId
+   * @return
+   */
+  public Future<Void> deleteServiceFromUser(Long userId, Long serviceId) {
+    return repo.deleteService(userId, serviceId);
+  }
 }

@@ -107,7 +107,7 @@ public class TestMySQLServiceRepository extends AbstractDatabaseTest {
     serviceRepo.createService(service)
       .compose(id -> {
         service.setId(id);
-        return serviceRepo.deleteService(id);
+        return serviceRepo.deleteService(userId, id);
       })
       .compose(next -> serviceRepo.getService(userId, service.getId()))
       .onSuccess(retrieved -> {

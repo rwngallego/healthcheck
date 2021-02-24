@@ -19,5 +19,5 @@ public interface ServiceRepository {
 
   Future<Void> updateService(Service service);
 
-  Future<Void> deleteService(Long serviceId);
+  Future<Void> deleteService(Long userId, Long serviceId);
 }

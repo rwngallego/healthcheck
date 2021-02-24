@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.rowinson.healthcheck.AbstractVerticleTest;
@@ -12,6 +13,12 @@ import org.rowinson.healthcheck.AbstractVerticleTest;
 @ExtendWith(VertxExtension.class)
 public class TestCreateUserHandler extends AbstractVerticleTest {
 
+  @BeforeEach
+  void setup(Vertx vertx, VertxTestContext testContext) {
+    this.cleanEach()
+      .onFailure(err -> testContext.failNow(err))
+      .onComplete(next -> testContext.completeNow());
+  }
 
   @Test
   void create_user(Vertx vertx, VertxTestContext testContext) {

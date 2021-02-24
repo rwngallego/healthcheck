@@ -23,12 +23,15 @@ import java.util.HashMap;
 
 /**
  * Creates the verticle in charge of executing the polling
- * to the services to monitor
+ * to the monitored services
  */
 public class PollerVerticle extends AbstractVerticle {
-  public static final int PERIODIC_DELAY = 5000;
+  private static final Logger LOG = LoggerFactory.getLogger(PollerVerticle.class);
+
   public static final String MSG_SERVICE_STATUS_SUCCEEDED = "service.status.succeeded";
   public static final String MSG_SERVICE_STATUS_FAILED = "service.status.failed";
+  public static final String MSG_SERVICE_DELETED = "service.deleted";
+  public static final String MSG_SERVICE_CREATED = "service.created";
 
   // ms before failing an attempt
   public static final int TIMEOUT_IN_MS = 500;
@@ -36,9 +39,11 @@ public class PollerVerticle extends AbstractVerticle {
   public static final long LINEAR_BACKOFF = 10L;
   // number of retries before opening the circuit
   public static final int MAX_RETRIES = 2;
-  private static final Logger LOG = LoggerFactory.getLogger(PollerVerticle.class);
-  // this id can be used for a safe and orchestrated shutdown
+  // these ids can be used for a safe and orchestrated shutdown
   private static HashMap<Long, Long> memory = new HashMap<>();
+  // how frequent we are polling the services
+  public static final int PERIODIC_DELAY = 5000;
+
   private ServiceApplication serviceApplication;
 
   @Override
@@ -64,8 +69,40 @@ public class PollerVerticle extends AbstractVerticle {
       });
   }
 
+  private void handleServiceRegistrations(WebClient client) {
+    EventBus eb = vertx.eventBus();
+    eb.<JsonObject>consumer(MSG_SERVICE_CREATED)
+      .handler(m -> {
+        var service = m.body().mapTo(Service.class);
+        registerService(eb, client, service);
+      });
+    eb.<Long>consumer(MSG_SERVICE_DELETED)
+      .handler(m -> {
+        var serviceId = m.body();
+        unregisterService(serviceId);
+      });
+  }
+
+  private void registerService(EventBus eb, WebClient client, Service service) {
+    vertx.setPeriodic(PERIODIC_DELAY, timerId -> {
+      memory.put(service.getId(), timerId);
+
+      LOG.info("Executing polling cycle with id {}", timerId);
+
+      pollService(eb, client, service);
+    });
+  }
+
+  private void unregisterService(Long serviceId) {
+    var timerId = memory.get(serviceId);
+    if (timerId != null) {
+      vertx.cancelTimer(timerId);
+    }
+    memory.remove(serviceId);
+  }
+
   private void pollService(EventBus eb, WebClient client, Service service) {
-    URL url = getUrl(eb, service);
+    URL url = getUrl(service);
     if (url == null) return;
     var port = url.getPort();
     var host = url.getHost();
@@ -118,47 +155,21 @@ public class PollerVerticle extends AbstractVerticle {
       });
   }
 
-  private URL getUrl(EventBus eb, Service service) {
+
+  /**
+   * Get the service URL object
+   * @param service
+   * @return
+   */
+  private URL getUrl(Service service) {
     URL url;
     try {
       url = new URL(service.getUrl());
     } catch (MalformedURLException e) {
-      eb.publish(MSG_SERVICE_STATUS_FAILED, JsonObject.mapFrom(service));
       LOG.error("Service {}. Could not parse the URL, reason:", service.toJson(), e);
       return null;
     }
     return url;
   }
 
-  private void handleServiceRegistrations(WebClient client) {
-    EventBus eb = vertx.eventBus();
-    eb.<JsonObject>consumer("service.created")
-      .handler(m -> {
-        var service = m.body().mapTo(Service.class);
-        registerService(eb, client, service);
-      });
-    eb.<JsonObject>consumer("service.deleted")
-      .handler(m -> {
-        var service = m.body().mapTo(Service.class);
-        unregisterService(service);
-      });
-  }
-
-  private void registerService(EventBus eb, WebClient client, Service service) {
-    vertx.setPeriodic(PERIODIC_DELAY, timerId -> {
-      memory.put(service.getId(), timerId);
-
-      LOG.info("Executing polling cycle with id {}", timerId);
-
-      pollService(eb, client, service);
-    });
-  }
-
-  private void unregisterService(Service service) {
-    var timerId = memory.get(service.getId());
-    if (timerId != null) {
-      vertx.cancelTimer(timerId);
-    }
-    memory.remove(service.getId());
-  }
 }

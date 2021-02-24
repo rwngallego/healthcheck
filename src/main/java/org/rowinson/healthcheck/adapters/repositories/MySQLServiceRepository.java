@@ -147,15 +147,19 @@ public class MySQLServiceRepository implements ServiceRepository {
   /**
    * Delete the service
    *
+   * @param userId
    * @param serviceId
    * @return
    */
   @Override
-  public Future<Void> deleteService(Long serviceId) {
+  public Future<Void> deleteService(Long userId, Long serviceId) {
     LOG.info("Deleting service from DB: {}", serviceId);
 
-    return SqlTemplate.forUpdate(pool, "DELETE FROM services WHERE id = #{id}")
-      .execute(Collections.singletonMap("id", serviceId))
+    Map<String, Object> params = new HashMap<>();
+    params.put("id", serviceId);
+    params.put("userId", userId);
+    return SqlTemplate.forUpdate(pool, "DELETE FROM services WHERE id = #{id} AND user_id = #{userId}")
+      .execute(params)
       .compose(results -> {
         LOG.debug("Service deleted: {}", serviceId);
         return Future.succeededFuture();

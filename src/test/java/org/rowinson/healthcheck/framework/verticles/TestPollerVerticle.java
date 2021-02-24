@@ -1,19 +1,18 @@
 package org.rowinson.healthcheck.framework.verticles;
 
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import io.vertx.mysqlclient.MySQLPool;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.rowinson.healthcheck.AbstractDatabaseTest;
 import org.rowinson.healthcheck.domain.Service;
 import org.rowinson.healthcheck.framework.Config;
+import org.rowinson.healthcheck.framework.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,9 @@ import java.util.ArrayList;
 
 @ExtendWith(VertxExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class TestPollerVerticle extends AbstractDatabaseTest {
+public class TestPollerVerticle {
+
+  private static final Logger LOG = LoggerFactory.getLogger(TestPollerVerticle.class);
 
   public static final Service SERVICE_1 = new Service(1, 1001, "service-1", "http://127.0.0.1:7001", "UNKNOWN", LocalDateTime.now(), LocalDateTime.now());
   public static final Service SERVICE_2 = new Service(2, 1002, "service-2", "http://127.0.0.1:7002", "UNKNOWN", LocalDateTime.now(), LocalDateTime.now());
@@ -32,17 +33,23 @@ public class TestPollerVerticle extends AbstractDatabaseTest {
   public static final int PORT_3 = 7003;
   public static final int SLEEP_1 = 10;
   public static final int SLEEP_2 = 700;
-  private static final Logger LOG = LoggerFactory.getLogger(TestPollerVerticle.class);
   public static final int STATUS_1 = 200;
   public static final int STATUS_2 = 200;
   public static final int STATUS_3 = 500;
+
+  public MySQLPool pool;
 
   @BeforeAll
   void setup(Vertx vertx, VertxTestContext testContext) {
     Config.SetJsonConfig(Config.CONF_CONFIG_TEST_JSON);
     EventBus eb = vertx.eventBus();
 
-    vertx.deployVerticle(new PollerVerticle())
+    Config.GetValues(vertx)
+      .compose(config -> {
+        pool = Database.GetPool(vertx, config);
+        return Database.Cleanup(this.pool);
+      })
+      .compose(next -> vertx.deployVerticle(PollerVerticle.class.getName(), new DeploymentOptions().setWorker(true)))
       .compose(next -> startFakeEndpoint(vertx, PORT_1, SLEEP_1, STATUS_1))
       .compose(next -> startFakeEndpoint(vertx, PORT_2, SLEEP_2, STATUS_2))
       .compose(next -> startFakeEndpoint(vertx, PORT_3, 0L, STATUS_3))
