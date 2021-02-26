@@ -23,6 +23,10 @@ public class MySQLUserRepository implements UserRepository {
 
   private static final Logger LOG = LoggerFactory.getLogger(MySQLServiceRepository.class);
 
+  /**
+   * Constructor
+   * @param pool
+   */
   public MySQLUserRepository(MySQLPool pool) {
     this.pool = pool;
   }

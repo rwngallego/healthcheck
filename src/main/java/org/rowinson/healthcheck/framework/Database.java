@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class is in charge of the DB interactions
+ * This is in charge of the DB interactions
  */
 public class Database {
 
@@ -26,6 +26,9 @@ public class Database {
    */
   public static Future<Void> Migrate(Vertx vertx, JsonObject config) {
     return vertx.executeBlocking(promise -> {
+
+      LOG.info("Running the DB migrations");
+
       //TODO Currently uses ssl = false
       final String url = String.format("jdbc:mysql://%s:%d/%s?useSSL=false",
         config.getString(Config.DB_HOST),
@@ -64,7 +67,7 @@ public class Database {
   }
 
   /**
-   * Executes the DB clean up
+   * Executes the DB clean up (for demo only)
    *
    * @param pool
    * @return

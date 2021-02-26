@@ -6,9 +6,16 @@ import org.rowinson.healthcheck.domain.Service;
 
 import java.util.ArrayList;
 
+/**
+ * Manages all the logic related to the service handling
+ */
 public class ServiceApplication {
   private ServiceRepository repo;
 
+  /**
+   * Constructor
+   * @param repo
+   */
   public ServiceApplication(ServiceRepository repo) {
     this.repo = repo;
   }

@@ -8,6 +8,9 @@ import org.rowinson.healthcheck.application.ServiceApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Http handler for getting the list of services
+ */
 public class GetServicesHandler implements Handler<RoutingContext> {
   public static final Logger LOG = LoggerFactory.getLogger(GetServicesHandler.class);
 
@@ -23,6 +26,11 @@ public class GetServicesHandler implements Handler<RoutingContext> {
     var userId = Long.parseLong(userIdString);
 
     serviceApplication.getBelongingServices(userId, 0, 10, "name", "asc")
+      .onFailure(error -> {
+        LOG.error("Could not get the belonging services: ", error);
+
+        context.failure();
+      })
       .onSuccess(services -> {
         JsonArray result = new JsonArray();
         services.stream().forEach(a -> result.add(a));
@@ -32,11 +40,6 @@ public class GetServicesHandler implements Handler<RoutingContext> {
         context.response()
           .putHeader(Http.CONTENT_TYPE, Http.APPLICATION_JSON)
           .end(result.toBuffer());
-      })
-    .onFailure(error -> {
-      LOG.error("Could not get the belonging services: ", error);
-
-      context.failure();
-    });
+      });
   }
 }

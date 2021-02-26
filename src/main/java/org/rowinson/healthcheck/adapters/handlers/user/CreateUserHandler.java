@@ -9,6 +9,9 @@ import org.rowinson.healthcheck.framework.Http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Http handler for creating new users
+ */
 public class CreateUserHandler implements Handler<RoutingContext> {
 
   public static final Logger LOG = LoggerFactory.getLogger(GetServicesHandler.class);
@@ -31,7 +34,9 @@ public class CreateUserHandler implements Handler<RoutingContext> {
       .compose(userId -> userApplication.getUserById(userId))
       .onFailure(Http.handleFailure(context, "Could not retrieve the created user"))
       .onSuccess(created -> {
+
         LOG.info("User created: {}", created);
+
         context.response()
           .putHeader(Http.CONTENT_TYPE, Http.APPLICATION_JSON)
           .setStatusCode(200)

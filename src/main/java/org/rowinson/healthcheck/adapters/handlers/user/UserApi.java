@@ -7,6 +7,9 @@ import org.rowinson.healthcheck.application.UserApplication;
 import org.rowinson.healthcheck.application.interfaces.UserRepository;
 import org.rowinson.healthcheck.framework.verticles.ApiServerVerticle;
 
+/**
+ * Registers all the HTTP handlers related to the user endpoints
+ */
 public class UserApi {
   public static void attachHandlers(Router router, MySQLPool pool) {
     UserRepository repo = new MySQLUserRepository(pool);

@@ -4,9 +4,11 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.micrometer.PrometheusScrapingHandler;
 import io.vertx.mysqlclient.MySQLPool;
@@ -24,8 +26,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ApiServerVerticle extends AbstractVerticle {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ApiServerVerticle.class);
   public static final String PREFIX = "/api/v1";
+  private static final Logger LOG = LoggerFactory.getLogger(ApiServerVerticle.class);
 
   @Override
   public void start(Promise<Void> startPromise) {
@@ -39,6 +41,7 @@ public class ApiServerVerticle extends AbstractVerticle {
         MySQLPool pool = Database.GetPool(vertx, config);
 
         // general handlers
+        router.route().handler(corsHandler());
         router.route().handler(BodyHandler.create());
         router.route().handler(Http.handleLogging());
         router.errorHandler(500, Http.handleRouterError());
@@ -61,6 +64,21 @@ public class ApiServerVerticle extends AbstractVerticle {
         LOG.error("Could not load the configuration {}", error);
         startPromise.fail(error);
       });
+  }
+
+  /**
+   * Creates and configure the CorsHandler
+   * @return
+   */
+  private CorsHandler corsHandler() {
+    return CorsHandler.create("*")
+      .allowedMethod(HttpMethod.GET)
+      .allowedMethod(HttpMethod.POST)
+      .allowedHeader("Access-Control-Request-Method")
+      .allowedHeader("Access-Control-Allow-Credentials")
+      .allowedHeader("Access-Control-Allow-Origin")
+      .allowedHeader("Access-Control-Allow-Headers")
+      .allowedHeader("Content-Type");
   }
 
   /**

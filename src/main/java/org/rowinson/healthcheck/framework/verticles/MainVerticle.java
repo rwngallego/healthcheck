@@ -17,8 +17,7 @@ import java.text.SimpleDateFormat;
  * - Runs the pending migrations
  * - Deploys:
  *    - ApiServerVerticle
- *    - PollerWorkerVerticle
- *    - PushServiceVerticle
+ *    - PollerVerticle
  */
 public class MainVerticle extends AbstractVerticle {
 
@@ -40,6 +39,7 @@ public class MainVerticle extends AbstractVerticle {
     mapper.registerModule(new JavaTimeModule());
     mapper.setDateFormat(df);
 
+    // Deploys all the children verticles
     Config.GetValues(vertx)
       .compose(config -> Database.Migrate(vertx, config))
       .compose(next -> vertx.deployVerticle(ApiServerVerticle.class.getName(), new DeploymentOptions().setInstances(Runtime.getRuntime().availableProcessors())))

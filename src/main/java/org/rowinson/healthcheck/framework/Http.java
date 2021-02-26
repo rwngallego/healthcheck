@@ -41,6 +41,12 @@ public class Http {
     };
   }
 
+  /**
+   * Handles all the HTTP failures and sends an HTTP response with a message
+   * @param context
+   * @param message
+   * @return
+   */
   public static Handler<Throwable> handleFailure(RoutingContext context, String message) {
     return error -> {
       LOG.error("Error: ", error);

@@ -18,5 +18,6 @@ public class ServiceApi {
 
     router.get(ApiServerVerticle.PREFIX + "/users/:userId/services").handler(new GetServicesHandler(serviceApplication));
     router.post(ApiServerVerticle.PREFIX + "/users/:userId/services").handler(new CreateServiceHandler(vertx, serviceApplication));
+    router.delete(ApiServerVerticle.PREFIX + "/users/:userId/services").handler(new DeleteServiceHandler(vertx, serviceApplication));
   }
 }

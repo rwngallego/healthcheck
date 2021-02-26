@@ -28,6 +28,7 @@ import java.util.HashMap;
 public class PollerVerticle extends AbstractVerticle {
   private static final Logger LOG = LoggerFactory.getLogger(PollerVerticle.class);
 
+  // message topics
   public static final String MSG_SERVICE_STATUS_SUCCEEDED = "service.status.succeeded";
   public static final String MSG_SERVICE_STATUS_FAILED = "service.status.failed";
   public static final String MSG_SERVICE_DELETED = "service.deleted";
@@ -39,13 +40,19 @@ public class PollerVerticle extends AbstractVerticle {
   public static final long LINEAR_BACKOFF = 10L;
   // number of retries before opening the circuit
   public static final int MAX_RETRIES = 2;
-  // these ids can be used for a safe and orchestrated shutdown
+  // these ids can be used for a safe and orchestrated shutdown. Ideally
+  // we could use a SharedData to distribute across clusters
   private static HashMap<Long, Long> memory = new HashMap<>();
   // how frequent we are polling the services
-  public static final int PERIODIC_DELAY = 5000;
+  public static final int PERIODIC_DELAY_MS = 5000;
 
   private ServiceApplication serviceApplication;
 
+  /**
+   * This will get a DB pool, load the existing services from it
+   * and start the service registration logic
+   * @param startPromise
+   */
   @Override
   public void start(Promise<Void> startPromise) {
     var client = WebClient.create(vertx, new WebClientOptions().setUserAgent("HealthCheck/v0.1"));
@@ -60,6 +67,7 @@ public class PollerVerticle extends AbstractVerticle {
       })
       .compose(next -> loadFromDB(eb, client))
       .onSuccess(next -> {
+        // this will create message consumers for when a service is added/deleted
         handleServiceRegistrations(client);
         startPromise.complete();
       })
@@ -69,6 +77,10 @@ public class PollerVerticle extends AbstractVerticle {
       });
   }
 
+  /**
+   * This will listen to added/deleted services
+   * @param client
+   */
   private void handleServiceRegistrations(WebClient client) {
     EventBus eb = vertx.eventBus();
     eb.<JsonObject>consumer(MSG_SERVICE_CREATED)
@@ -83,16 +95,33 @@ public class PollerVerticle extends AbstractVerticle {
       });
   }
 
+  /**
+   * This registers a service in the periodic timer. Each
+   * PERIODIC_DELAY_MS the service will be polled using a retry
+   * with incremental backoff mechanism that can be adjusted.
+   *
+   * Note that the timer ids are stored so that they can be deregister when the
+   * services are removed.
+   *
+   * @param eb
+   * @param client
+   * @param service
+   */
   private void registerService(EventBus eb, WebClient client, Service service) {
-    vertx.setPeriodic(PERIODIC_DELAY, timerId -> {
+    vertx.setPeriodic(PERIODIC_DELAY_MS, timerId -> {
       memory.put(service.getId(), timerId);
 
       LOG.info("Executing polling cycle with id {}", timerId);
 
-      pollService(eb, client, service);
+      pollOneService(eb, client, service);
     });
   }
 
+  /**
+   * This will unregister a service, which means the cancellation
+   * of the periodic timer and the removal from the poller memory
+   * @param serviceId
+   */
   private void unregisterService(Long serviceId) {
     var timerId = memory.get(serviceId);
     if (timerId != null) {
@@ -101,7 +130,15 @@ public class PollerVerticle extends AbstractVerticle {
     memory.remove(serviceId);
   }
 
-  private void pollService(EventBus eb, WebClient client, Service service) {
+  /**
+   * This will execute asynchronously the poll to a
+   * service. It uses a retry mechanism with a linear time increment.
+   * Note that the circuit is open after MAX_RETRIES.
+   * @param eb
+   * @param client
+   * @param service
+   */
+  private void pollOneService(EventBus eb, WebClient client, Service service) {
     URL url = getUrl(service);
     if (url == null) return;
     var port = url.getPort();
@@ -143,6 +180,13 @@ public class PollerVerticle extends AbstractVerticle {
     });
   }
 
+  /**
+   * This will load the existing services from the DB and for
+   * each of them will register them in the polling system.
+   * @param eb
+   * @param client
+   * @return
+   */
   private Future<Void> loadFromDB(EventBus eb, WebClient client) {
     LOG.info("Loading existing services from the DB");
 
@@ -155,9 +199,8 @@ public class PollerVerticle extends AbstractVerticle {
       });
   }
 
-
   /**
-   * Get the service URL object
+   * Parses the service url and return a URL object
    * @param service
    * @return
    */

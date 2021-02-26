@@ -54,6 +54,12 @@ public class Config {
       });
   }
 
+  /**
+   *
+   * @param vertx
+   * @param confConfigJson
+   * @return
+   */
   private static Future<JsonObject> retrieveOptions(Vertx vertx, String confConfigJson) {
     // Stores
     ConfigStoreOptions fileStore = new ConfigStoreOptions()

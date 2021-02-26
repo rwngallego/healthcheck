@@ -22,14 +22,14 @@ The following assumptions were made as part of the design:
 
 The application will have HTTP handlers, the Application logic and the DB
 repositories. There will be an event bus, and a set of
-components (workers/push service) that will comunicate through it.
+components (workers/push service) that will communicate through it.
 
 ![img/architecture.v1.jpg](img/architecture.v1.jpg)
 
 There will be a pool of workers (Pollers) in charge of performing
 periodic health checks to the services. They will receive
 events when adding/removing/updating a service and produce events
-with the status of the services. Additionally, there can be
+with the status of the services. Additionally, there could be
 a Push Service (Extra) in charge of pushing the real updates to the
 clients through [web sockets](https://vertx.io/blog/real-time-bidding-with-websockets-and-vert-x/).
 In this case, the event bus plays a crucial
@@ -97,7 +97,6 @@ and can be viewed at: [http://localhost:9090](http://localhost:9090)
 
 - ServiceCreated
 - ServiceDeleted
-- ServiceUpdated
 - ServiceStatusFailed
 - ServiceStatusSucceeded
 
@@ -110,12 +109,13 @@ There will be adapters/application/domain/framework layers.
 - Adapters: Data transformation between the app and the DB/Web/Others
   - Handlers: Vert.x HTTP Handlers
   - Repositories: DB access
-  - Workers: Vert.x worker
 - Application: Contains the business rules and are decoupled from the
   upper layers.
 - Domain: Contains the plain entities from the domain that are used throughout
   the application.
 - Framework:
+  - Vert.x Verticles
+  - Vert.x Workers
   - Vert.x Event Bus
   - Configuration
   - Logging
@@ -135,14 +135,16 @@ There will be adapters/application/domain/framework layers.
   - [x] Implement the Repositories
   - [x] Implement the Handlers
   - [x] Implement the Application
+  - [x] Implement a basic Poller
   - [ ] Implement the Worker pool
   - [ ] Extra: Implement the Push Service
-- [ ] Frontend:
-  - [ ] Create the Dashboard page with the list of services and their status
-  - [ ] Services CRUD:
-    - [ ] Add
+- [x] Frontend:
+  - [x] Create the Dashboard page with the list of services and their status
+  - [x] Services CRUD:
+    - [x] Add
     - [ ] Edit
-    - [ ] List/Delete
+    - [x] List
+    - [ ] Delete
   - [ ] Extra: Push service status updates using web sockets
 
 ## Technologies
@@ -151,9 +153,9 @@ There will be adapters/application/domain/framework layers.
 
 - Vert.x
 - MySql
-- Vertx Web sockets to push live service status updates
 - Asynchronous logging (Log4j 2/Slf4j)
 - Clustering through Hazelcast
+- Vertx Web sockets to push live service status updates
 - Metrics through Micrometer/Prometheus
 
 ### Frontend
@@ -163,7 +165,7 @@ For the frontend, an SPA will be used with:
 - React
 - Jest
 - Ant Design
-- TypeScript
+- ES6
 
 ## API Endpoints
 
@@ -171,26 +173,24 @@ You can find the OpenAPI spec at [http://localhost:8888/swagger-v1/](http://loca
 
 ### Services
 
-The following methods require the auth token (JWT)
+The API is segregated by the `user_id` as the root resource to separate
+the data from different users. This simulates an API that is consumed
+by either the end users or other integration parties. Other mechanisms
+that can be implemented are by using a JWT token or a `user_id` header.
 
 Method | Endpoint | Description
 --- | --- | ---
-GET | /api/v1/services | Get the list of services for the user and their status `"OK"` or `"FAIL"`
-POST | /api/v1/services | Create a new service
-DELETE | /api/v1/service/:id | Delete service
-PUT | /api/v1/service/:id | Update service
+GET | /api/v1/users/:userId/services | Get the list of services for the user and their status `"OK"` or `"FAIL"`
+POST | /api/v1/users/:userId/services | Create a new service
+DELETE | /api/v1/users/:userId/service/:id | Delete service
+PUT | /api/v1/users/:userId/service/:id | Update service
 
-### Users
+### Users (Demo purposes)
 
 Method | Endpoint | Description
 --- | --- | ---
 POST | /api/v1/users | Create a new user
-
-### Authentication
-
-Method | Endpoint | Description
---- | --- | ---
-POST | /api/v1/login | Authenticate the user and get the access token
+GET | /api/v1/users | Get the list of users
 
 ## Further considerations
 

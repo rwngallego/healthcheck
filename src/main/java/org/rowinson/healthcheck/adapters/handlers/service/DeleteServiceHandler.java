@@ -10,6 +10,9 @@ import org.rowinson.healthcheck.framework.verticles.PollerVerticle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Http handler for the removal of a service
+ */
 public class DeleteServiceHandler implements Handler<RoutingContext>{
 
   public static final Logger LOG = LoggerFactory.getLogger(GetServicesHandler.class);

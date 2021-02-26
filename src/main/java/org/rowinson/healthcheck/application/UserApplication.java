@@ -6,9 +6,16 @@ import org.rowinson.healthcheck.domain.User;
 
 import java.util.ArrayList;
 
+/**
+ * Manages all the logic related to the user handling
+ */
 public class UserApplication {
   UserRepository repo;
 
+  /**
+   * Constructor
+   * @param repo
+   */
   public UserApplication(UserRepository repo) {
     this.repo = repo;
   }

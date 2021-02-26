@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is the entry point to the application. In this custom launcher
- * the metrics and the generic exception handler are configured
+ * the Prometheus metrics/registry are configured
  */
 public class CustomLauncher extends Launcher {
 
