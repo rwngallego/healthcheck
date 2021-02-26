@@ -18,6 +18,7 @@ public class Http {
 
   /**
    * Logs the incoming requests
+   *
    * @return
    */
   public static Handler<RoutingContext> handleLogging() {
@@ -43,6 +44,7 @@ public class Http {
 
   /**
    * Handles all the HTTP failures and sends an HTTP response with a message
+   *
    * @param context
    * @param message
    * @return

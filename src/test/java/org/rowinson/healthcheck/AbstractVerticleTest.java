@@ -14,6 +14,9 @@ import org.rowinson.healthcheck.framework.Config;
 import org.rowinson.healthcheck.framework.Database;
 import org.rowinson.healthcheck.framework.verticles.MainVerticle;
 
+/**
+ * Configures vertx, deploy the main verticle and cleans the DB on every run
+ */
 @ExtendWith(VertxExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractVerticleTest {

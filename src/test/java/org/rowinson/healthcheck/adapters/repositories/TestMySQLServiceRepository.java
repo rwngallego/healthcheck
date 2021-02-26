@@ -81,17 +81,20 @@ public class TestMySQLServiceRepository extends AbstractDatabaseTest {
     service.setUserId(userId);
     service.setName("test-service-update");
     service.setUrl("http://127.0.0.1/");
+    service.setStatus("OK");
     serviceRepo.createService(service)
       .compose(serviceId -> {
         service.setId(serviceId);
         service.setName("test-service-update-after");
         service.setUrl("http://192.168.0.1/");
+        service.setStatus("FAIL");
         return serviceRepo.updateService(service);
       })
       .compose(next -> serviceRepo.getService(userId, service.getId()))
       .onSuccess(updated -> {
         Assertions.assertEquals("test-service-update-after", updated.getName());
         Assertions.assertEquals("http://192.168.0.1/", updated.getUrl());
+        Assertions.assertEquals("FAIL", updated.getStatus());
         testContext.completeNow();
       })
       .onFailure(e -> testContext.failNow(e));

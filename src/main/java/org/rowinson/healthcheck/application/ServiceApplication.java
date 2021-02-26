@@ -14,6 +14,7 @@ public class ServiceApplication {
 
   /**
    * Constructor
+   *
    * @param repo
    */
   public ServiceApplication(ServiceRepository repo) {
@@ -22,6 +23,7 @@ public class ServiceApplication {
 
   /**
    * Return the list of services that belong to the given user
+   *
    * @param userId
    * @param offset
    * @param size
@@ -35,6 +37,7 @@ public class ServiceApplication {
 
   /**
    * Return all the services
+   *
    * @return
    */
   public Future<ArrayList<Service>> getRegisteredServices() {
@@ -43,6 +46,7 @@ public class ServiceApplication {
 
   /**
    * Creates a new service for the user
+   *
    * @param userId
    * @param service
    * @return
@@ -54,6 +58,7 @@ public class ServiceApplication {
 
   /**
    * Get a service from the user by the given service id
+   *
    * @param userId
    * @param serviceId
    * @return
@@ -64,11 +69,26 @@ public class ServiceApplication {
 
   /**
    * Delete a service from the user
+   *
    * @param userId
    * @param serviceId
    * @return
    */
   public Future<Void> deleteServiceFromUser(Long userId, Long serviceId) {
     return repo.deleteService(userId, serviceId);
+  }
+
+  /**
+   * Changes the status of the service
+   *
+   * @param service
+   * @return
+   */
+  public Future<Void> changeServiceStatus(Service service, String status) {
+    service.setStatus(status);
+
+    // For time constrains we're using this, but ideally in the
+    // repository it should be just a single SQL query for a single value
+    return repo.updateService(service);
   }
 }

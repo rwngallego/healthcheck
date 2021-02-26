@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Http handler for getting the list of users
+ *
  * @implNote It needs to be paginated
  */
 public class GetUsersHandler implements Handler<RoutingContext> {
@@ -24,11 +25,7 @@ public class GetUsersHandler implements Handler<RoutingContext> {
   @Override
   public void handle(RoutingContext context) {
     userApplication.getAllUsers(0, 10, "name", "asc")
-      .onFailure(error -> {
-        LOG.error("Could not get the users: ", error);
-
-        context.failure();
-      })
+      .onFailure(Http.handleFailure(context, "Could not get the users"))
       .onSuccess(users -> {
         JsonArray result = new JsonArray();
         users.stream().forEach(a -> result.add(a));

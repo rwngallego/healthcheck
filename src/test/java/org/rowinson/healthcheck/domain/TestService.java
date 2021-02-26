@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class TestService extends AbstractDatabaseTest {
   @Test
-  void testServiceToJson () {
+  void testServiceToJson() {
     LocalDateTime newCreatedAt = LocalDateTime.now();
     LocalDateTime newUpdatedAt = LocalDateTime.now();
 

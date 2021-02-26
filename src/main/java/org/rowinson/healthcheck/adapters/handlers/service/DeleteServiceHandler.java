@@ -13,14 +13,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Http handler for the removal of a service
  */
-public class DeleteServiceHandler implements Handler<RoutingContext>{
+public class DeleteServiceHandler implements Handler<RoutingContext> {
 
   public static final Logger LOG = LoggerFactory.getLogger(GetServicesHandler.class);
 
   private ServiceApplication serviceApplication;
   private Vertx vertx;
 
-  DeleteServiceHandler (Vertx vertx, ServiceApplication application) {
+  DeleteServiceHandler(Vertx vertx, ServiceApplication application) {
     this.vertx = vertx;
     this.serviceApplication = application;
   }
@@ -37,7 +37,7 @@ public class DeleteServiceHandler implements Handler<RoutingContext>{
 
     serviceApplication.deleteServiceFromUser(userId, serviceId)
       .onFailure(Http.handleFailure(context, "Could not delete the service"))
-      .onSuccess(next-> {
+      .onSuccess(next -> {
         LOG.info("Service deleted: {}", serviceId);
 
         eb.publish(PollerVerticle.MSG_SERVICE_DELETED, serviceId);

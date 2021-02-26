@@ -8,11 +8,12 @@ services:
       - 8888:8888
     networks:
       - healthcheck-net
+    depends_on:
+      - mysql
+    restart: always
 
   mysql:
     image: mysql:5.7
-    volumes:
-      - ./data:/var/lib/mysql
     ports:
       - 3306:3306
     restart: always

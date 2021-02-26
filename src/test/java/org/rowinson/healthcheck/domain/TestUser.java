@@ -6,7 +6,7 @@ import org.rowinson.healthcheck.AbstractDatabaseTest;
 
 public class TestUser extends AbstractDatabaseTest {
   @Test
-  void testUserToJson () {
+  void testUserToJson() {
     User user = new User();
     user.setId(7);
     user.setName("test-name");

@@ -19,12 +19,12 @@ import java.util.Map;
  * of handling the DB interactions related to the Users.
  */
 public class MySQLUserRepository implements UserRepository {
-  private MySQLPool pool;
-
   private static final Logger LOG = LoggerFactory.getLogger(MySQLServiceRepository.class);
+  private MySQLPool pool;
 
   /**
    * Constructor
+   *
    * @param pool
    */
   public MySQLUserRepository(MySQLPool pool) {

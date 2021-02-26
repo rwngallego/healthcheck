@@ -4,7 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonObject;
+import org.rowinson.healthcheck.adapters.repositories.MySQLServiceRepository;
+import org.rowinson.healthcheck.application.ServiceApplication;
+import org.rowinson.healthcheck.domain.Service;
 import org.rowinson.healthcheck.framework.Config;
 import org.rowinson.healthcheck.framework.Database;
 import org.slf4j.Logger;
@@ -16,13 +22,14 @@ import java.text.SimpleDateFormat;
  * Main verticle in charge of deploying the other application verticles:
  * - Runs the pending migrations
  * - Deploys:
- *    - ApiServerVerticle
- *    - PollerVerticle
+ * - ApiServerVerticle
+ * - PollerVerticle
  */
 public class MainVerticle extends AbstractVerticle {
 
   public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
   private static final Logger LOG = LoggerFactory.getLogger(MainVerticle.class);
+  private ServiceApplication serviceApplication;
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
@@ -41,7 +48,8 @@ public class MainVerticle extends AbstractVerticle {
 
     // Deploys all the children verticles
     Config.GetValues(vertx)
-      .compose(config -> Database.Migrate(vertx, config))
+      .compose(this::setupDb)
+      .compose(next -> handleServiceStatusUpdates())
       .compose(next -> vertx.deployVerticle(ApiServerVerticle.class.getName(), new DeploymentOptions().setInstances(Runtime.getRuntime().availableProcessors())))
       .compose(next -> vertx.deployVerticle(PollerVerticle.class.getName(), new DeploymentOptions().setWorker(true)))
       .onFailure(error -> {
@@ -53,5 +61,46 @@ public class MainVerticle extends AbstractVerticle {
         LOG.info("{} deployed, id: {}", PollerVerticle.class.getName(), id);
         startPromise.complete();
       });
+  }
+
+  /**
+   * Get the DB pool, creates the service application and executes
+   * the migrations
+   *
+   * @param config
+   * @return
+   */
+  private Future<Void> setupDb(JsonObject config) {
+    var pool = Database.GetPool(vertx, config);
+    var repo = new MySQLServiceRepository(pool);
+    this.serviceApplication = new ServiceApplication(repo);
+    return Database.Migrate(vertx, config);
+  }
+
+  /**
+   * For time constraints this is a single DB pool in the MainVerticle,
+   * but can be moved to a separate Verticle deployed multiple times
+   * with multiple pools (but with caution because
+   * could hammer the DB heavily)
+   *
+   * @return
+   */
+  private Future<Void> handleServiceStatusUpdates() {
+    EventBus eb = vertx.eventBus();
+    eb.<JsonObject>consumer(PollerVerticle.MSG_SERVICE_STATUS_SUCCEEDED)
+      .handler(m -> {
+        var service = m.body().mapTo(Service.class);
+        // we need a basic cache mechanism here (memcached) to avoid changing
+        // the status if the status hasn't changed
+        serviceApplication.changeServiceStatus(service, Service.STATUS_OK);
+      });
+    eb.<JsonObject>consumer(PollerVerticle.MSG_SERVICE_STATUS_FAILED)
+      .handler(m -> {
+        var service = m.body().mapTo(Service.class);
+        // we need a basic cache mechanism here (memcached) to avoid changing
+        // the status if the status hasn't changed
+        serviceApplication.changeServiceStatus(service, Service.STATUS_FAIL);
+      });
+    return Future.succeededFuture();
   }
 }

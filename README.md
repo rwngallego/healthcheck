@@ -10,32 +10,26 @@ backend and React in the frontend.
 
 For further information:
 - [Design and Architecture](docs/design.md)
-- The Open API Spec is hosted at: [http://localhost:8888/swagger-v1/](http://localhost:8888/swagger-v1/)
-
-## Usage
-
-Once you run the application, you can go to the `/ui` root:
-
-[http://localhost:8888/ui/](http://localhost:8888/ui/)
-
-From there you can select a user to list the different services.
-
-### Frontend
-
-![](./docs/img/preview.png)
-
-### Backend
-
-![](./docs/img/preview-backend.png)
+- The Open API Spec is hosted at: [http://127.0.0.1:8888/swagger-v1/index.html](http://127.0.0.1:8888/swagger-v1/index.html)
 
 ## Run with docker-compose
 
-This is the prefered method to see everything in action. Once run all the
-containers, you should be able to access [http://localhost:8888/ui/](http://localhost:8888/ui/)
+This is the prefered method to see everything in action. However, if the
+database container hasn't started yet, the app container will fail and
+docker will restart it automatically.
 
 ```bash
 docker-compose up -d
+
+# to inspect the Java logs:
+docker-compose logs -f --tail=10 healthcheck
 ```
+
+Once all the containers are running, you should be able
+to access [http://127.0.0.1:8888/ui/](http://127.0.0.1:8888/ui/)
+
+Have in mind that it will host the already generated package. To make any changes
+run it locally.
 
 ## Run it locally
 
@@ -53,13 +47,17 @@ You can change the configuration values at `src/main/resources/conf/config.json`
 }
 ```
 
-To run it:
+Then you can run it:
 
 ```
 ./gradlew clean run
 ```
 
-### Tests
+### Unit Tests
+
+You need to configure the values from `src/main/resources/conf/config.test.json`,
+or set the configuration values as ENV variables.
+
 ```
 ./gradlew clean test
 ```
@@ -75,6 +73,30 @@ To run it:
 docker build -t healthcheck .
 docker run healthcheck
 ```
+
+## Usage
+
+Once you run the application, you can go to the `/ui` root:
+
+[http://127.0.0.1:8888/ui/](http://127.0.0.1:8888/ui/)
+
+From there you can select a user to list the different services.
+
+### Frontend
+
+![](./docs/img/preview.png)
+
+### Backend
+
+![](./docs/img/preview-backend.png)
+
+### Metrics
+
+Go to Prometheus: [http://127.0.0.1:9090/](http://127.0.0.1:9090/)
+
+Go to Grafana: [http://127.0.0.1:3000](http://127.0.0.1:3000) (admin/admin and skip), and import the Dashboard from `config/grafana/vertx.json`
+
+![](./docs/img/metrics.png)
 
 ## Logging
 

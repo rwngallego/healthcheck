@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Service {
+  public static final String STATUS_FAIL = "FAIL";
+  public static final String STATUS_OK = "OK";
+  public static final String STATUS_UNKNOWN = "UNKNOWN";
+
   private long id;
   @JsonProperty("user_id")
   private long userId;

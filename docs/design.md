@@ -8,6 +8,7 @@ considerations, and the architecture design for its initial version.
 
 The following assumptions were made as part of the design:
 
+- Doesn't support SSL/TLS.
 - Some parts of the app will be simplified to cover the base use cases but
   can easily be extended (e.g. Sign in/Registration/User CRUD).
 - For time constrains, the application will follow a traditional
@@ -131,7 +132,7 @@ There will be adapters/application/domain/framework layers.
   - [x] Containers (Dockerfile/docker-compose.yml)
   - [x] Code structure
 - Backend:
-  - [x] Define the API using OpenAPI. Url: [http://localhost:8888/openapi](http://localhost:8888/swagger)
+  - [x] Define the API using OpenAPI. Url: [http://127.0.0.1:8888/swagger-v1/index.html](http://127.0.0.1:8888/swagger-v1/index.html)
   - [x] Implement the Repositories
   - [x] Implement the Handlers
   - [x] Implement the Application
@@ -169,7 +170,7 @@ For the frontend, an SPA will be used with:
 
 ## API Endpoints
 
-You can find the OpenAPI spec at [http://localhost:8888/swagger-v1/](http://localhost:8888/swagger-v1/)
+You can find the OpenAPI spec at [http://127.0.0.1:8888/swagger-v1/index.html](http://127.0.0.1:8888/swagger-v1/index.html)
 
 ### Services
 

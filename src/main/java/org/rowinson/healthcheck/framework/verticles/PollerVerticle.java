@@ -55,7 +55,7 @@ public class PollerVerticle extends AbstractVerticle {
    */
   @Override
   public void start(Promise<Void> startPromise) {
-    var client = WebClient.create(vertx, new WebClientOptions().setUserAgent("HealthCheck/v0.1"));
+    var client = WebClient.create(vertx, new WebClientOptions().setUserAgent("curl/7.64.1"));
     var eb = vertx.eventBus();
 
     Config.GetValues(vertx)
@@ -65,10 +65,10 @@ public class PollerVerticle extends AbstractVerticle {
         var repo = new MySQLServiceRepository(pool);
         this.serviceApplication = new ServiceApplication(repo);
       })
-      .compose(next -> loadFromDB(eb, client))
+      .compose(next -> loadExistingServicesFromDB(eb, client))
       .onSuccess(next -> {
         // this will create message consumers for when a service is added/deleted
-        handleServiceRegistrations(client);
+        handleDynamicServiceRegistrations(client);
         startPromise.complete();
       })
       .onFailure(error -> {
@@ -78,10 +78,29 @@ public class PollerVerticle extends AbstractVerticle {
   }
 
   /**
+   * This will load the existing services from the DB and for
+   * each of them will register them in the polling system.
+   * @param eb
+   * @param client
+   * @return
+   */
+  private Future<Void> loadExistingServicesFromDB(EventBus eb, WebClient client) {
+    LOG.info("Loading existing services from the DB");
+
+    return serviceApplication.getRegisteredServices()
+      .compose(services -> {
+        services.stream().forEach(service -> {
+          registerService(eb, client, service);
+        });
+        return Future.succeededFuture();
+      });
+  }
+
+  /**
    * This will listen to added/deleted services
    * @param client
    */
-  private void handleServiceRegistrations(WebClient client) {
+  private void handleDynamicServiceRegistrations(WebClient client) {
     EventBus eb = vertx.eventBus();
     eb.<JsonObject>consumer(MSG_SERVICE_CREATED)
       .handler(m -> {
@@ -141,9 +160,10 @@ public class PollerVerticle extends AbstractVerticle {
   private void pollOneService(EventBus eb, WebClient client, Service service) {
     URL url = getUrl(service);
     if (url == null) return;
-    var port = url.getPort();
+    var port = url.getPort() != -1 ?  url.getPort() : url.getDefaultPort() ;
     var host = url.getHost();
     var endpoint = url.getPath() + url.getQuery();
+    var isSSL = url.getProtocol().equals("https");
 
     // Configurable linear backoff retry mechanism
     var breakerOptions = new CircuitBreakerOptions()
@@ -155,17 +175,25 @@ public class PollerVerticle extends AbstractVerticle {
         return count * LINEAR_BACKOFF;
       });
 
-    LOG.info("Service {}. Polling service", service.getId());
+    LOG.info("Service {}. Polling service with host={} port={} endpoint={} isSSL={}",
+      service.getId(),
+      host,
+      port,
+      endpoint,
+      isSSL);
 
     // Execute the http request
     breaker.execute(promise -> {
       LOG.info("Service {}. Executing request", service.getId());
 
       client.get(port, host, endpoint)
+        .ssl(isSSL)
         .send()
         .onFailure(error -> promise.fail(error))
         .onSuccess(response -> {
-          if (response.statusCode() == 200) {
+          LOG.debug("Service {}. Status code: {}", service.getId(), response.statusCode());
+
+          if (response.statusCode() >= 200 && response.statusCode() <=299) {
             promise.complete("OK");
           } else {
             promise.fail("FAIL");
@@ -178,25 +206,6 @@ public class PollerVerticle extends AbstractVerticle {
       eb.publish(MSG_SERVICE_STATUS_FAILED, JsonObject.mapFrom(service));
       LOG.info("Service {}. Failed poll, result: {}", service.getId(), r);
     });
-  }
-
-  /**
-   * This will load the existing services from the DB and for
-   * each of them will register them in the polling system.
-   * @param eb
-   * @param client
-   * @return
-   */
-  private Future<Void> loadFromDB(EventBus eb, WebClient client) {
-    LOG.info("Loading existing services from the DB");
-
-    return serviceApplication.getRegisteredServices()
-      .compose(services -> {
-        services.stream().forEach(service -> {
-          registerService(eb, client, service);
-        });
-        return Future.succeededFuture();
-      });
   }
 
   /**

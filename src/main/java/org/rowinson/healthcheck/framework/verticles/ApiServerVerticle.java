@@ -68,6 +68,7 @@ public class ApiServerVerticle extends AbstractVerticle {
 
   /**
    * Creates and configure the CorsHandler
+   *
    * @return
    */
   private CorsHandler corsHandler() {

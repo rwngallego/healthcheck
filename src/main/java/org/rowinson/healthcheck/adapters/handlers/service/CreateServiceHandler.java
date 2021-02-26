@@ -14,14 +14,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Http handler for the creation of services
  */
-public class CreateServiceHandler implements Handler<RoutingContext>{
+public class CreateServiceHandler implements Handler<RoutingContext> {
 
   public static final Logger LOG = LoggerFactory.getLogger(GetServicesHandler.class);
 
   private Vertx vertx;
   private ServiceApplication serviceApplication;
 
-  CreateServiceHandler (Vertx vertx, ServiceApplication application) {
+  CreateServiceHandler(Vertx vertx, ServiceApplication application) {
     this.vertx = vertx;
     this.serviceApplication = application;
   }

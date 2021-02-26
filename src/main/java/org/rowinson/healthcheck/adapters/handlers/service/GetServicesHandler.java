@@ -3,8 +3,8 @@ package org.rowinson.healthcheck.adapters.handlers.service;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.RoutingContext;
-import org.rowinson.healthcheck.framework.Http;
 import org.rowinson.healthcheck.application.ServiceApplication;
+import org.rowinson.healthcheck.framework.Http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +26,7 @@ public class GetServicesHandler implements Handler<RoutingContext> {
     var userId = Long.parseLong(userIdString);
 
     serviceApplication.getBelongingServices(userId, 0, 10, "name", "asc")
-      .onFailure(error -> {
-        LOG.error("Could not get the belonging services: ", error);
-
-        context.failure();
-      })
+      .onFailure(Http.handleFailure(context, "Could not get the belonging services"))
       .onSuccess(services -> {
         JsonArray result = new JsonArray();
         services.stream().forEach(a -> result.add(a));

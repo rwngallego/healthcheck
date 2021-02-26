@@ -14,6 +14,7 @@ public class UserApplication {
 
   /**
    * Constructor
+   *
    * @param repo
    */
   public UserApplication(UserRepository repo) {
@@ -32,6 +33,7 @@ public class UserApplication {
 
   /**
    * Get the user by his Id
+   *
    * @param userId
    * @return
    */
@@ -42,6 +44,7 @@ public class UserApplication {
   /**
    * Get all the users from the application.
    * Note: This is for demo purposes and has no results pagination
+   *
    * @param offset
    * @param size
    * @param orderBy

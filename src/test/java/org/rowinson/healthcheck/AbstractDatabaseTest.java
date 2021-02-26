@@ -18,6 +18,9 @@ import org.rowinson.healthcheck.framework.verticles.MainVerticle;
 
 import java.text.SimpleDateFormat;
 
+/**
+ * Configures vertx, setup the database and cleans it on every run
+ */
 @ExtendWith(VertxExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractDatabaseTest {
@@ -25,11 +28,6 @@ public abstract class AbstractDatabaseTest {
   public MySQLUserRepository userRepo;
   public MySQLPool pool;
 
-  /**
-   * Configures vertx, setup the database and clean it on every run
-   * @param vertx
-   * @param testContext
-   */
   @BeforeAll
   void setup_vertx(Vertx vertx, VertxTestContext testContext) {
     // Configure mapper

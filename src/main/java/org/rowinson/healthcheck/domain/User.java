@@ -17,9 +17,10 @@ public class User {
 
   /**
    * Gets the JsonObject representation
+   *
    * @return
    */
-  public JsonObject toJson(){
+  public JsonObject toJson() {
     return JsonObject.mapFrom(this);
   }
 }

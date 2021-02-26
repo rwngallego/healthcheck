@@ -27,6 +27,7 @@ public class Config {
 
   /**
    * Sets the location of the json config
+   *
    * @param filePath
    */
   public static void SetJsonConfig(String filePath) {
@@ -37,6 +38,7 @@ public class Config {
    * Get the configuration object from multiple stores, primarily from the
    * JsonConfig file. First get the values from the json file
    * and then override them with the ENV values.
+   *
    * @param vertx
    * @return
    */
@@ -55,7 +57,6 @@ public class Config {
   }
 
   /**
-   *
    * @param vertx
    * @param confConfigJson
    * @return

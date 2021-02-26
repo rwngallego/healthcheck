@@ -140,7 +140,8 @@ public class MySQLServiceRepository implements ServiceRepository {
     params.put("serviceId", service.getId());
     params.put("name", service.getName());
     params.put("url", service.getUrl());
-    return SqlTemplate.forUpdate(pool, "UPDATE services SET name=#{name}, url=#{url} WHERE id = #{serviceId}")
+    params.put("status", service.getStatus());
+    return SqlTemplate.forUpdate(pool, "UPDATE services SET name=#{name}, url=#{url}, status=#{status}, updated_at=current_timestamp WHERE id = #{serviceId}")
       .execute(params)
       .compose(results -> {
         LOG.debug("Service updated, service: {}", service.getId());
